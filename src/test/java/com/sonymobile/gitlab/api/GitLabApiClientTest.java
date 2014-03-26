@@ -24,11 +24,79 @@
 
 package com.sonymobile.gitlab.api;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.sonymobile.gitlab.GitLabSession;
+import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
+import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
+import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 /**
- * Unit tests for {@link com.sonymobile.gitlab.api.GitLabApiClient}.
+ * Unit tests for {@link GitLabApiClient}.
  *
- * @author Emil Nilsson.
+ * @author Emil Nilsson
  */
 public class GitLabApiClientTest {
+    /** A rule for setting up a mock server for every test. */
+    @Rule
+    public WireMockRule serverRule = new WireMockRule(9090);
 
+    /** The GitLab API client to test against. */
+    private GitLabApiClient client;
+    /** A body message for a valid session. */
+    private static final String validSessionResponseBody;
+
+    // creates a body message for a valid session
+    static {
+        validSessionResponseBody = new JSONObject()
+                .put("id",              1)
+                .put("username",        "username")
+                .put("email",           "user@example.com")
+                .put("name",            "User Name")
+                .put("private_token",   "token")
+                .put("blocked",         false).toString();
+    }
+
+    /**
+     * Set up the GitLab API client.
+     */
+    @Before
+    public void setUp() {
+        client = new GitLabApiClient("http://localhost:9090", "token");
+    }
+
+    /**
+     * Tests getting a session with valid credentials.
+     *
+     * Uses {@link GitLabApiClient#getSession(String, String)} to get a session.
+     *
+     * @throws ApiConnectionFailureException if the connection failed
+     * @throws AuthenticationFailedException if the authentication failed
+     */
+    @Test
+    public void testGettingValidSession() throws ApiConnectionFailureException, AuthenticationFailedException {
+        // stub the request to get a session that is expected
+        stubFor(post(urlEqualTo("/api/v3/session"))
+                .withRequestBody(equalTo("login=username&password=password"))
+                .willReturn(aResponse()
+                        .withStatus(201)
+                        .withBody(validSessionResponseBody.toString())));
+
+        // get a session from the API and make sure it succeeds
+        GitLabSession session = client.getSession("username", "password");
+
+        // check that the values of the session are correct
+        assertThat(1, is(session.getId()));
+        assertThat("username", is(session.getUsername()));
+        assertThat("user@example.com", is(session.getEmail()));
+        assertThat("User Name", is(session.getName()));
+        assertThat("token", is(session.getPrivateToken()));
+        assertThat(false, is(session.isBlocked()));
+    }
 }
