@@ -108,4 +108,15 @@ public class GitLabSessionTest {
     public void testIsBlocked() {
         assertThat(false, is(session.isBlocked()));
     }
+
+    /**
+     * Tests that creating a session fails if needed keys are missing.
+     *
+     * The construct should throw {@link java.lang.IllegalArgumentException} when keys are missing.
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testMissingKeys() {
+        // use empty JSON object
+        new GitLabSession(new JSONObject());
+    }
 }
