@@ -1,0 +1,4 @@
+# never ignore this file
+!/.gitignore
+/target/
+/work/
