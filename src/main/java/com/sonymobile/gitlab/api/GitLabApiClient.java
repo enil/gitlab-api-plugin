@@ -27,7 +27,7 @@ package com.sonymobile.gitlab.api;
 /**
  * A client for communicating with a GitLab API.
  *
- * @author Emil Nilsson.
+ * @author Emil Nilsson
  */
 public class GitLabApiClient {
 }

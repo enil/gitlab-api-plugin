@@ -30,7 +30,7 @@ import org.json.JSONObject;
 /**
  * A GitLab session.
  *
- * @author Emil Nilsson.
+ * @author Emil Nilsson
  */
 public class GitLabSession {
     /** The user ID. */
@@ -49,8 +49,8 @@ public class GitLabSession {
     /**
      * Create a session from a JSON object.
      *
-     * @param jsonObject the JSON object.
-     * @throws java.lang.IllegalArgumentException if the JSON object is malformed.
+     * @param jsonObject the JSON object
+     * @throws java.lang.IllegalArgumentException if the JSON object is malformed
      */
     public GitLabSession(JSONObject jsonObject) {
         try {
@@ -62,14 +62,14 @@ public class GitLabSession {
             isBlocked = jsonObject.getBoolean("blocked");
         } catch (JSONException e) {
             // failed to retrieve a value
-            throw new IllegalArgumentException("Malformed JSON object");
+            throw new IllegalArgumentException("Malformed JSON object", e);
         }
     }
 
     /**
      * Returns the user ID.
      *
-     * @return a user ID.
+     * @return a user ID
      */
     public int getId() {
         return id;
@@ -78,7 +78,7 @@ public class GitLabSession {
     /**
      * Returns the username of the user
      *
-     * @return a username.
+     * @return a username
      */
     public String getUsername() {
         return username;
@@ -87,7 +87,7 @@ public class GitLabSession {
     /**
      * Returns the email address of the user.
      *
-     * @return an email address.
+     * @return an email address
      */
     public String getEmail() {
         return email;
@@ -96,7 +96,7 @@ public class GitLabSession {
     /**
      * Returns the name of the user.
      *
-     * @return a name.
+     * @return a name
      */
     public String getName() {
         return name;
@@ -105,7 +105,7 @@ public class GitLabSession {
     /**
      * Returns the private token for the user.
      *
-     * @return a private token.
+     * @return a private token
      */
     public String getPrivateToken() {
         return privateToken;
@@ -113,7 +113,8 @@ public class GitLabSession {
 
     /**
      * Returns whether the user is blocked.
-     * @return true if the user is blocked.
+     *
+     * @return true if the user is blocked
      */
     public boolean isBlocked() {
         return isBlocked;

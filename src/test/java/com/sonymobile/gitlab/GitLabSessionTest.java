@@ -32,9 +32,9 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 /**
- * Unit tests for {@link com.sonymobile.gitlab.GitLabSession}/
+ * Unit tests for {@link com.sonymobile.gitlab.GitLabSession}.
  *
- * @author Emil Nilsson.
+ * @author Emil Nilsson
  */
 public class GitLabSessionTest {
     /** The session object to test against. */
