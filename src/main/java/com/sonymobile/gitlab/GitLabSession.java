@@ -24,6 +24,7 @@
 
 package com.sonymobile.gitlab;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -32,6 +33,19 @@ import org.json.JSONObject;
  * @author Emil Nilsson.
  */
 public class GitLabSession {
+    /** The user ID. */
+    private final int id;
+    /** The username. */
+    private final String username;
+    /** The email address. */
+    private final String email;
+    /** The name. */
+    private final String name;
+    /** The private token. */
+    private final String privateToken;
+    /** Whether the user is blocked. */
+    private final boolean isBlocked;
+
     /**
      * Create a session from a JSON object.
      *
@@ -39,8 +53,17 @@ public class GitLabSession {
      * @throws java.lang.IllegalArgumentException if the JSON object is malformed.
      */
     public GitLabSession(JSONObject jsonObject) {
-        // todo: implement
-        throw new UnsupportedOperationException("Not implemented");
+        try {
+            id = jsonObject.getInt("id");
+            username = jsonObject.getString("username");
+            email = jsonObject.getString("email");
+            name = jsonObject.getString("name");
+            privateToken = jsonObject.getString("private_token");
+            isBlocked = jsonObject.getBoolean("blocked");
+        } catch (JSONException e) {
+            // failed to retrieve a value
+            throw new IllegalArgumentException("Malformed JSON object");
+        }
     }
 
     /**
@@ -49,8 +72,7 @@ public class GitLabSession {
      * @return a user ID.
      */
     public int getId() {
-        // todo: implement
-        throw new UnsupportedOperationException("Not implemented");
+        return id;
     }
 
     /**
@@ -59,8 +81,7 @@ public class GitLabSession {
      * @return a username.
      */
     public String getUsername() {
-        // todo: implement
-        throw new UnsupportedOperationException("Not implemented");
+        return username;
     }
 
     /**
@@ -69,8 +90,7 @@ public class GitLabSession {
      * @return an email address.
      */
     public String getEmail() {
-        // todo: implement
-        throw new UnsupportedOperationException("Not implemented");
+        return email;
     }
 
     /**
@@ -79,8 +99,7 @@ public class GitLabSession {
      * @return a name.
      */
     public String getName() {
-        // todo: implement
-        throw new UnsupportedOperationException("Not implemented");
+        return name;
     }
 
     /**
@@ -89,8 +108,7 @@ public class GitLabSession {
      * @return a private token.
      */
     public String getPrivateToken() {
-        // todo: implement
-        throw new UnsupportedOperationException("Not implemented");
+        return privateToken;
     }
 
     /**
@@ -98,7 +116,6 @@ public class GitLabSession {
      * @return true if the user is blocked.
      */
     public boolean isBlocked() {
-        // todo: implement
-        throw new UnsupportedOperationException("Not implemented");
+        return isBlocked;
     }
 }

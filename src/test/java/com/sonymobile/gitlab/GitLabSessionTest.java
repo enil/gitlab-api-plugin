@@ -24,9 +24,11 @@
 
 package com.sonymobile.gitlab;
 
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 /**
@@ -37,14 +39,26 @@ import static org.junit.Assert.*;
 public class GitLabSessionTest {
     /** The session object to test against. */
     private GitLabSession session;
+    /** The JSON object to create the session from. */
+    private static final JSONObject jsonObject = new JSONObject();
+
+    // set values for the JSON object
+    static {
+        jsonObject
+                .put("id",              1)
+                .put("username",        "username")
+                .put("email",           "user@example.com")
+                .put("name",            "User Name")
+                .put("private_token",   "token")
+                .put("blocked",         false);
+    }
 
     /**
      * Sets up the session object with reasonable values.
      */
     @Before
     public void setUp() {
-        // todo: implement
-        throw new UnsupportedOperationException("Not implemented");
+        session = new GitLabSession(jsonObject);
     }
 
     /**
@@ -52,8 +66,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void testId() {
-        // todo: implement
-        fail("Not implemented");
+        assertThat(1, is(session.getId()));
     }
 
     /**
@@ -61,8 +74,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void testUsername() {
-        // todo: implement
-        fail("Not implemented");
+        assertThat("username", is(session.getUsername()));
     }
 
     /**
@@ -70,8 +82,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void testEmail() {
-        // todo: implement
-        fail("Not implemented");
+        assertThat("user@example.com", is(session.getEmail()));
     }
 
     /**
@@ -79,8 +90,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void testName() {
-        // todo: implement
-        fail("Not implemented");
+        assertThat("User Name", is(session.getName()));
     }
 
     /**
@@ -88,8 +98,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void testPrivateToken() {
-        // todo: implement
-        fail("Not implemented");
+        assertThat("token", is(session.getPrivateToken()));
     }
 
     /**
@@ -97,7 +106,6 @@ public class GitLabSessionTest {
      */
     @Test
     public void testIsBlocked() {
-        // todo: implement
-        fail("Not implemented");
+        assertThat(false, is(session.isBlocked()));
     }
 }
