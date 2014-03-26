@@ -24,10 +24,80 @@
 
 package com.sonymobile.gitlab;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 /**
  * Unit tests for {@link com.sonymobile.gitlab.GitLabSession}/
  *
  * @author Emil Nilsson.
  */
 public class GitLabSessionTest {
+    /** The session object to test against. */
+    private GitLabSession session;
+
+    /**
+     * Sets up the session object with reasonable values.
+     */
+    @Before
+    public void setUp() {
+        // todo: implement
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
+     * Tests whether the correct user ID is set.
+     */
+    @Test
+    public void testId() {
+        // todo: implement
+        fail("Not implemented");
+    }
+
+    /**
+     * Tests whether the correct username is set.
+     */
+    @Test
+    public void testUsername() {
+        // todo: implement
+        fail("Not implemented");
+    }
+
+    /**
+     * Tests whether the correct email address is set.
+     */
+    @Test
+    public void testEmail() {
+        // todo: implement
+        fail("Not implemented");
+    }
+
+    /**
+     * Tests whether the correct name is set.
+     */
+    @Test
+    public void testName() {
+        // todo: implement
+        fail("Not implemented");
+    }
+
+    /**
+     * Tests whether the correct private token is set.
+     */
+    @Test
+    public void testPrivateToken() {
+        // todo: implement
+        fail("Not implemented");
+    }
+
+    /**
+     * Tests whether the correct block status is set.
+     */
+    @Test
+    public void testIsBlocked() {
+        // todo: implement
+        fail("Not implemented");
+    }
 }

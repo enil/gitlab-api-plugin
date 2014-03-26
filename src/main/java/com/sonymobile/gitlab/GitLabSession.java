@@ -24,11 +24,81 @@
 
 package com.sonymobile.gitlab;
 
+import org.json.JSONObject;
+
 /**
  * A GitLab session.
  *
  * @author Emil Nilsson.
  */
 public class GitLabSession {
+    /**
+     * Create a session from a JSON object.
+     *
+     * @param jsonObject the JSON object.
+     * @throws java.lang.IllegalArgumentException if the JSON object is malformed.
+     */
+    public GitLabSession(JSONObject jsonObject) {
+        // todo: implement
+        throw new UnsupportedOperationException("Not implemented");
+    }
 
+    /**
+     * Returns the user ID.
+     *
+     * @return a user ID.
+     */
+    public int getId() {
+        // todo: implement
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
+     * Returns the username of the user
+     *
+     * @return a username.
+     */
+    public String getUsername() {
+        // todo: implement
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
+     * Returns the email address of the user.
+     *
+     * @return an email address.
+     */
+    public String getEmail() {
+        // todo: implement
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
+     * Returns the name of the user.
+     *
+     * @return a name.
+     */
+    public String getName() {
+        // todo: implement
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
+     * Returns the private token for the user.
+     *
+     * @return a private token.
+     */
+    public String getPrivateToken() {
+        // todo: implement
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
+     * Returns whether the user is blocked.
+     * @return true if the user is blocked.
+     */
+    public boolean isBlocked() {
+        // todo: implement
+        throw new UnsupportedOperationException("Not implemented");
+    }
 }
