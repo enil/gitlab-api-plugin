@@ -68,8 +68,10 @@ public class GitLabApiClient {
     public static GitLabApiClient openSession(final String host, final String login,
                                               final String password) throws ApiConnectionFailureException,
             AuthenticationFailedException {
-        // todo: implement
-        throw new UnsupportedOperationException("Not implemented");
+        // connect to API and create a session with the user credentials
+        final GitLabSession session = new GitLabApiClient(host, null).getSession(login, password);
+        // use token from session to create a client
+        return new GitLabApiClient(host, session.getPrivateToken());
     }
 
     /**
