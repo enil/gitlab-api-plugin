@@ -30,6 +30,7 @@ import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -98,5 +99,16 @@ public class GitLabApiClientTest {
         assertThat("User Name", is(session.getName()));
         assertThat("token", is(session.getPrivateToken()));
         assertThat(false, is(session.isBlocked()));
+    }
+
+    /**
+     * Tests attempting to get a session with invalid credentials.
+     *
+     * Uses {@link GitLabApiClient#getSession(String, String)} to get a session.
+     */
+    @Ignore("Not implemented")
+    @Test
+    public void testGettingInvalidSession() {
+        // todo: implement
     }
 }
