@@ -28,27 +28,42 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * A GitLab session.
+ * A GitLab user.
  *
  * @author Emil Nilsson
  */
-public class GitLabSession {
-    /** The private token. */
-    private final String privateToken;
-    /** The user. */
-    private final GitLabUser user;
+public class GitLabUser {
+    /** The user ID. */
+    private final int id;
+    /** The username. */
+    private final String username;
+    /** The email address. */
+    private final String email;
+    /** The name. */
+    private final String name;
+    /** Whether the user is blocked. */
+    private final boolean isBlocked;
 
     /**
-     * Creates a session from a JSON object.
+     * Creates a user from a JSON object.
+     *
+     * A user object can either be created from a session JSON object or a user JSON object.
      *
      * @param jsonObject the JSON object
      * @throws java.lang.IllegalArgumentException if the JSON object is malformed
      */
-    public GitLabSession(JSONObject jsonObject) {
+    public GitLabUser(JSONObject jsonObject) {
         try {
-            privateToken = jsonObject.getString("private_token");
-            // create a user object using the same JSON object
-            user = new GitLabUser(jsonObject);
+            id = jsonObject.getInt("id");
+            username = jsonObject.getString("username");
+            email = jsonObject.getString("email");
+            name = jsonObject.getString("name");
+            // sessions objects use key "blocked", user objects use "state"
+            if (jsonObject.has("blocked")) {
+                isBlocked = jsonObject.getBoolean("blocked");
+            } else {
+                isBlocked = jsonObject.getString("state").equals("blocked");
+            }
         } catch (JSONException e) {
             // failed to retrieve a value
             throw new IllegalArgumentException("Malformed JSON object", e);
@@ -61,7 +76,7 @@ public class GitLabSession {
      * @return a user ID
      */
     public int getId() {
-        return user.getId();
+        return id;
     }
 
     /**
@@ -70,7 +85,7 @@ public class GitLabSession {
      * @return a username
      */
     public String getUsername() {
-        return user.getUsername();
+        return username;
     }
 
     /**
@@ -79,7 +94,7 @@ public class GitLabSession {
      * @return an email address
      */
     public String getEmail() {
-        return user.getEmail();
+        return email;
     }
 
     /**
@@ -88,7 +103,7 @@ public class GitLabSession {
      * @return a name
      */
     public String getName() {
-        return user.getName();
+        return name;
     }
 
     /**
@@ -97,15 +112,11 @@ public class GitLabSession {
      * @return true if the user is blocked
      */
     public boolean isBlocked() {
-        return user.isBlocked();
+        return isBlocked;
     }
 
-    /**
-     * Returns the private token for the user.
-     *
-     * @return a private token
-     */
-    public String getPrivateToken() {
-        return privateToken;
+    @Override
+    public String toString() {
+        return getName();
     }
 }
