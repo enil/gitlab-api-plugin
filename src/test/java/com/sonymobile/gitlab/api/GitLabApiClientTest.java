@@ -106,9 +106,15 @@ public class GitLabApiClientTest {
      *
      * Uses {@link GitLabApiClient#getSession(String, String)} to get a session.
      */
-    @Ignore("Not implemented")
-    @Test
-    public void testGettingInvalidSession() {
-        // todo: implement
+    @Test(expected=AuthenticationFailedException.class)
+    public void testGettingInvalidSession() throws AuthenticationFailedException, ApiConnectionFailureException {
+        // stub for request to get an error code
+        stubFor(post(urlEqualTo("/api/v3/session"))
+                .withRequestBody(equalTo("login=username&password=invalidpassword"))
+                .willReturn(aResponse()
+                .withStatus(401)));
+
+        // try to get a session from the API and expect it to throw and exception
+        client.getSession("username", "invalidpassword");
     }
 }
