@@ -53,7 +53,7 @@ The constructor `GitLabClient(host, privateToken)` sets up the client using a pr
 
 Use the static method `openSession(host, login, password)` to connect with user's login name and password:
 
-    GitLabClient client = GitLabClient("http://demo.gitlab.com", "jsmith", "123456");
+    GitLabClient client = new GitLabClient("http://demo.gitlab.com", "jsmith", "123456");
 
 ### Session
 
@@ -67,7 +67,30 @@ It is possible to explicitly fetch a session using `getSession(login, password)`
     System.out.println(session.getPrivateToken());
     // prints "Wvjy2Krpb7y8xi93owUz"
 
-The session is fetching with a `POST` request to [/session][].
+The session is fetching with a `POST` request to [/session][session].
 
-[GitLab]:   https://www.gitlab.com/
-[/session]:  http://api.gitlab.org/session.html
+### Proxy
+
+A proxy can be configured either using the `GitLabClient` constructor or using [Java system properties][javaproxy].
+
+The alternate constructor `GitLabClient(host, privateToken, proxyHost, proxyPort)` works as expected:
+
+    GitLabClient client = new GitLabClient("http://demo.gitlab.com", "Wvjy2Krpb7y8xi93owUz", "proxyhost", 8080);
+
+Or using the static `openSession(host, login, password, proxyHost, proxyPort)` method:
+
+    GitLabClient client = new GitLabClient("http://demo.gitlab.com", "jsmith", "123456", "proxyhost", 8080);
+
+The proxy server can also be set using `System.setProperty(key, value)`:
+
+    System.setProperty("http.proxyHost", "proxyhost");
+    System.setProperty("http.proxyPort", "8080");
+
+This can also be done from the command line when running your application:
+
+    java -Dhttp.proxyHost=proxyhost -Dhttp.proxyPort=8080 MyApplication
+
+
+[GitLab]:       https://www.gitlab.com/
+[session]:     http://api.gitlab.org/session.html
+[javaproxy]:    http://docs.oracle.com/javase/6/docs/technotes/guides/net/proxies.html

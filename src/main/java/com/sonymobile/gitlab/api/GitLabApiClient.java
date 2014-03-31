@@ -31,6 +31,8 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sonymobile.gitlab.GitLabSession;
 import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
+import org.apache.http.HttpHost;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 /**
  * A client for communicating with a GitLab API.
@@ -42,6 +44,10 @@ public class GitLabApiClient {
     private final String host;
     /** The private token used to authenticate the connection. */
     private final String privateToken;
+    /** The used proxy host (or null if proxy is not used) */
+    private final String proxyHost;
+    /** The used proxy port */
+    private final int proxyPort;
 
     /**
      * Creates a GitLab API client.
@@ -50,8 +56,26 @@ public class GitLabApiClient {
      * @param privateToken the private token used to authenticate the connection
      */
     public GitLabApiClient(final String host, final String privateToken) {
+        // initialize without a proxy
+        this(host, privateToken, null, 0);
+    }
+
+    /**
+     * Creates a GitLab API client connecting using a proxy server.
+     *
+     * @param host the URL of the host server (excluding the path)
+     * @param privateToken the private token used to authenticate the connection
+     * @param proxyHost the used proxy host
+     * @param proxyPort the used proxy port
+     */
+    public GitLabApiClient(final String host, final String privateToken, final String proxyHost, final int proxyPort) {
         this.host = host;
         this.privateToken = privateToken;
+        this.proxyHost = proxyHost;
+        this.proxyPort = proxyPort;
+
+        // create the HTTP client used by Unirest
+        initializeHttpClient();
     }
 
     /**
@@ -68,10 +92,30 @@ public class GitLabApiClient {
     public static GitLabApiClient openSession(final String host, final String login,
                                               final String password) throws ApiConnectionFailureException,
             AuthenticationFailedException {
+        // open session without setting a proxy
+        return openSession(host, login, password, null, 0);
+    }
+
+    /**
+     * Opens a session with the API using user credentials connecting using a proxy server.
+     *
+     * This may be used to create a GitLab API client without a private token using only the username and password.
+     *
+     * @param host the URL of the host server (excluding the path)
+     * @param password the password of the user
+     * @return a GitLab API client
+     * @param proxyHost the used proxy host
+     * @param proxyPort the used proxy port
+     * @throws ApiConnectionFailureException if the connection with the API failed
+     * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
+     */
+    public static GitLabApiClient openSession(final String host, final String login, final String password,
+                                            final String proxyHost, final int proxyPort) throws
+            ApiConnectionFailureException, AuthenticationFailedException {
         // connect to API and create a session with the user credentials
-        final GitLabSession session = new GitLabApiClient(host, null).getSession(login, password);
+        final GitLabSession session = new GitLabApiClient(host, null, proxyHost, proxyPort).getSession(login, password);
         // use token from session to create a client
-        return new GitLabApiClient(host, session.getPrivateToken());
+        return new GitLabApiClient(host, session.getPrivateToken(), proxyHost, proxyPort);
     }
 
     /**
@@ -103,6 +147,22 @@ public class GitLabApiClient {
 
         // create a session object with the response
         return new GitLabSession(response.getBody().getObject());
+    }
+
+    /**
+     * Create the HTTP client.
+     *
+     * If a proxy is specified this will be used for the client.
+     */
+    private void initializeHttpClient() {
+        // use proxy settings etc from system properties
+        final HttpClientBuilder builder = HttpClientBuilder.create().useSystemProperties();
+        // override proxy settings if the proxy host is set
+        if (proxyHost != null) {
+            builder.setProxy(new HttpHost(proxyHost, proxyPort));
+        }
+
+        Unirest.setHttpClient(builder.build());
     }
 
     /**
