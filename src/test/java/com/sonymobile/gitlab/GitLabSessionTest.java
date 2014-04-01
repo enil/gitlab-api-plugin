@@ -24,6 +24,7 @@
 
 package com.sonymobile.gitlab;
 
+import com.sonymobile.gitlab.helpers.MockData;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,26 +40,13 @@ import static org.junit.Assert.assertThat;
 public class GitLabSessionTest {
     /** The session object to test against. */
     private GitLabSession session;
-    /** The JSON object to create the session from. */
-    private static final JSONObject jsonObject = new JSONObject();
-
-    // set values for the JSON object
-    static {
-        jsonObject
-                .put("id",              1)
-                .put("username",        "username")
-                .put("email",           "user@example.com")
-                .put("name",            "User Name")
-                .put("private_token",   "token")
-                .put("blocked",         false);
-    }
 
     /**
      * Sets up the session object with reasonable values.
      */
     @Before
     public void setUp() {
-        session = new GitLabSession(jsonObject);
+        session = new GitLabSession(MockData.VALID_SESSION);
     }
 
     /**
@@ -66,7 +54,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void testId() {
-        assertThat(1, is(session.getId()));
+        assertThat(MockData.USER_ID, is(session.getId()));
     }
 
     /**
@@ -74,7 +62,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void testUsername() {
-        assertThat("username", is(session.getUsername()));
+        assertThat(MockData.USER_USERNAME, is(session.getUsername()));
     }
 
     /**
@@ -82,7 +70,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void testEmail() {
-        assertThat("user@example.com", is(session.getEmail()));
+        assertThat(MockData.USER_EMAIL, is(session.getEmail()));
     }
 
     /**
@@ -90,7 +78,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void testName() {
-        assertThat("User Name", is(session.getName()));
+        assertThat(MockData.USER_NAME, is(session.getName()));
     }
 
     /**
@@ -98,7 +86,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void testPrivateToken() {
-        assertThat("token", is(session.getPrivateToken()));
+        assertThat(MockData.PRIVATE_TOKEN, is(session.getPrivateToken()));
     }
 
     /**

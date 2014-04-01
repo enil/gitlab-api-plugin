@@ -24,6 +24,7 @@
 
 package com.sonymobile.gitlab;
 
+import com.sonymobile.gitlab.helpers.MockData;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,26 +40,13 @@ import static org.junit.Assert.assertThat;
 public class GitLabUserTest {
     /** The session object to test against. */
     private GitLabUser user;
-    /** The JSON object to create the user from. */
-    private static final JSONObject jsonObject = new JSONObject();
-
-    // set values for the JSON object
-    static {
-        jsonObject
-                .put("id",              1)
-                .put("username",        "username")
-                .put("email",           "user@example.com")
-                .put("name",            "User Name")
-                .put("private_token",   "token")
-                .put("state",           "active");
-    }
 
     /**
      * Sets up the session object with reasonable values.
      */
     @Before
     public void setUp() {
-        user = new GitLabUser(jsonObject);
+        user = new GitLabUser(MockData.VALID_USER);
     }
 
     /**
@@ -66,7 +54,7 @@ public class GitLabUserTest {
      */
     @Test
     public void testId() {
-        assertThat(1, is(user.getId()));
+        assertThat(MockData.USER_ID, is(user.getId()));
     }
 
     /**
@@ -74,7 +62,7 @@ public class GitLabUserTest {
      */
     @Test
     public void testUsername() {
-        assertThat("username", is(user.getUsername()));
+        assertThat(MockData.USER_USERNAME, is(user.getUsername()));
     }
 
     /**
@@ -82,7 +70,7 @@ public class GitLabUserTest {
      */
     @Test
     public void testEmail() {
-        assertThat("user@example.com", is(user.getEmail()));
+        assertThat(MockData.USER_EMAIL, is(user.getEmail()));
     }
 
     /**
@@ -90,7 +78,7 @@ public class GitLabUserTest {
      */
     @Test
     public void testName() {
-        assertThat("User Name", is(user.getName()));
+        assertThat(MockData.USER_NAME, is(user.getName()));
     }
 
     /**
