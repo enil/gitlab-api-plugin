@@ -107,4 +107,13 @@ public class GitLabSession {
     public String getPrivateToken() {
         return privateToken;
     }
+
+    /**
+     * Returns the user of the session.
+     *
+     * @return a user object for the user
+     */
+    public GitLabUser getUser() {
+        return user;
+    }
 }
