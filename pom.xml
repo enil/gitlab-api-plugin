@@ -52,4 +52,20 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <configLocation>build_config/swe_checkstyle.xml</configLocation>
+          <suppressionsLocation>build_config/checkstyle-supressions.xml</suppressionsLocation>
+          <!-- fixme: make tests pass checkstyle -->
+          <includeTestSourceDirectory>false</includeTestSourceDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

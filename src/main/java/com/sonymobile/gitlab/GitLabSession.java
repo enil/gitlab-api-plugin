@@ -42,7 +42,6 @@ public class GitLabSession {
      * Creates a session from a JSON object.
      *
      * @param jsonObject the JSON object
-     * @throws java.lang.IllegalArgumentException if the JSON object is malformed
      */
     public GitLabSession(JSONObject jsonObject) {
         try {
@@ -65,7 +64,7 @@ public class GitLabSession {
     }
 
     /**
-     * Returns the username of the user
+     * Returns the username of the user.
      *
      * @return a username
      */

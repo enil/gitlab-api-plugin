@@ -44,16 +44,16 @@ gitlab-api-client is simple to install with maven, just add the following lines 
 
 ## Usage
 
-An instance of `GitLabClient` must be created to connect to a server.
+An instance of `GitLabApiClient` must be created to connect to a server.
 There are two ways to connect, either with a *private token* or with user credentials.
 
-The constructor `GitLabClient(host, privateToken)` sets up the client using a private token:
+The constructor `GitLabApiClient(host, privateToken)` sets up the client using a private token:
 
-    GitLabClient client = new GitLabClient("http://demo.gitlab.com", "Wvjy2Krpb7y8xi93owUz");
+    GitLabApiClient client = new GitLabApiClient("http://demo.gitlab.com", "Wvjy2Krpb7y8xi93owUz");
 
 Use the static method `openSession(host, login, password)` to connect with user's login name and password:
 
-    GitLabClient client = new GitLabClient("http://demo.gitlab.com", "jsmith", "123456");
+    GitLabApiClient client = new GitLabApiClient("http://demo.gitlab.com", "jsmith", "123456");
 
 ### Session
 
@@ -71,15 +71,15 @@ The session is fetching with a `POST` request to [/session][session].
 
 ### Proxy
 
-A proxy can be configured either using the `GitLabClient` constructor or using [Java system properties][javaproxy].
+A proxy can be configured either using the `GitLabApiClient` constructor or using [Java system properties][javaproxy].
 
-The alternate constructor `GitLabClient(host, privateToken, proxyHost, proxyPort)` works as expected:
+The alternate constructor `GitLabApiClient(host, privateToken, proxyHost, proxyPort)` works as expected:
 
-    GitLabClient client = new GitLabClient("http://demo.gitlab.com", "Wvjy2Krpb7y8xi93owUz", "proxyhost", 8080);
+    GitLabApiClient client = new GitLabApiClient("http://demo.gitlab.com", "Wvjy2Krpb7y8xi93owUz", "proxyhost", 8080);
 
 Or using the static `openSession(host, login, password, proxyHost, proxyPort)` method:
 
-    GitLabClient client = new GitLabClient("http://demo.gitlab.com", "jsmith", "123456", "proxyhost", 8080);
+    GitLabApiClient client = new GitLabApiClient("http://demo.gitlab.com", "jsmith", "123456", "proxyhost", 8080);
 
 The proxy server can also be set using `System.setProperty(key, value)`:
 
@@ -92,5 +92,5 @@ This can also be done from the command line when running your application:
 
 
 [GitLab]:       https://www.gitlab.com/
-[session]:     http://api.gitlab.org/session.html
+[session]:      http://api.gitlab.org/session.html
 [javaproxy]:    http://docs.oracle.com/javase/6/docs/technotes/guides/net/proxies.html

@@ -50,7 +50,6 @@ public class GitLabUser {
      * A user object can either be created from a session JSON object or a user JSON object.
      *
      * @param jsonObject the JSON object
-     * @throws java.lang.IllegalArgumentException if the JSON object is malformed
      */
     public GitLabUser(JSONObject jsonObject) {
         try {
@@ -80,7 +79,7 @@ public class GitLabUser {
     }
 
     /**
-     * Returns the username of the user
+     * Returns the username of the user.
      *
      * @return a username
      */

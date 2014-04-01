@@ -40,6 +40,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
  * @author Emil Nilsson
  */
 public class GitLabApiClient {
+    /** HTTP status code 201 Created. */
+    private static final int HTTP_201_CREATED = 201;
+
     /** The URL of the host server excluding the path. */
     private final String host;
     /** The private token used to authenticate the connection. */
@@ -52,7 +55,7 @@ public class GitLabApiClient {
     /**
      * Creates a GitLab API client.
      *
-     * @param host the URL of the host server (excluding the path)
+     * @param host         the URL of the host server (excluding the path)
      * @param privateToken the private token used to authenticate the connection
      */
     public GitLabApiClient(final String host, final String privateToken) {
@@ -63,10 +66,10 @@ public class GitLabApiClient {
     /**
      * Creates a GitLab API client connecting using a proxy server.
      *
-     * @param host the URL of the host server (excluding the path)
+     * @param host         the URL of the host server (excluding the path)
      * @param privateToken the private token used to authenticate the connection
-     * @param proxyHost the used proxy host
-     * @param proxyPort the used proxy port
+     * @param proxyHost    the used proxy host
+     * @param proxyPort    the used proxy port
      */
     public GitLabApiClient(final String host, final String privateToken, final String proxyHost, final int proxyPort) {
         this.host = host;
@@ -83,15 +86,15 @@ public class GitLabApiClient {
      *
      * This may be used to create a GitLab API client without a private token using only the username and password.
      *
-     * @param host the URL of the host server (excluding the path)
+     * @param host     the URL of the host server (excluding the path)
+     * @param login    the username of the user
      * @param password the password of the user
      * @return a GitLab API client
      * @throws ApiConnectionFailureException if the connection with the API failed
      * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
      */
-    public static GitLabApiClient openSession(final String host, final String login,
-                                              final String password) throws ApiConnectionFailureException,
-            AuthenticationFailedException {
+    public static GitLabApiClient openSession(final String host, final String login, final String password)
+            throws ApiConnectionFailureException, AuthenticationFailedException {
         // open session without setting a proxy
         return openSession(host, login, password, null, 0);
     }
@@ -101,17 +104,18 @@ public class GitLabApiClient {
      *
      * This may be used to create a GitLab API client without a private token using only the username and password.
      *
-     * @param host the URL of the host server (excluding the path)
-     * @param password the password of the user
-     * @return a GitLab API client
+     * @param host      the URL of the host server (excluding the path)
+     * @param login     the username of the user
+     * @param password  the password of the user
      * @param proxyHost the used proxy host
      * @param proxyPort the used proxy port
+     * @return a GitLab API client
      * @throws ApiConnectionFailureException if the connection with the API failed
      * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
      */
     public static GitLabApiClient openSession(final String host, final String login, final String password,
-                                            final String proxyHost, final int proxyPort) throws
-            ApiConnectionFailureException, AuthenticationFailedException {
+                                              final String proxyHost, final int proxyPort)
+            throws ApiConnectionFailureException, AuthenticationFailedException {
         // connect to API and create a session with the user credentials
         final GitLabSession session = new GitLabApiClient(host, null, proxyHost, proxyPort).getSession(login, password);
         // use token from session to create a client
@@ -121,14 +125,14 @@ public class GitLabApiClient {
     /**
      * Fetches a session to the API using user credentials.
      *
-     * @param login the username of the user
+     * @param login    the username of the user
      * @param password the password of the user
      * @return a session object
      * @throws ApiConnectionFailureException if the connection with the API failed
      * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
      */
-    public GitLabSession getSession(final String login, final String password) throws ApiConnectionFailureException,
-            AuthenticationFailedException {
+    public GitLabSession getSession(final String login, final String password)
+            throws ApiConnectionFailureException, AuthenticationFailedException {
         final HttpResponse<JsonNode> response;
         try {
             // send request to API
@@ -141,7 +145,7 @@ public class GitLabApiClient {
         }
 
         // check if the request was successful
-        if (response.getCode() != 201) {
+        if (response.getCode() != HTTP_201_CREATED) {
             throw new AuthenticationFailedException("Invalid user credentials");
         }
 
