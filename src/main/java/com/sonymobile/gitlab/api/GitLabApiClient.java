@@ -29,6 +29,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sonymobile.gitlab.GitLabSession;
+import com.sonymobile.gitlab.GitLabUser;
 import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
 import org.apache.http.HttpHost;
@@ -40,6 +41,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
  * @author Emil Nilsson
  */
 public class GitLabApiClient {
+    /** HTTP status code 200 OK. */
+    private static final int HTTP_200_OK = 200;
     /** HTTP status code 201 Created. */
     private static final int HTTP_201_CREATED = 201;
 
@@ -151,6 +154,36 @@ public class GitLabApiClient {
 
         // create a session object with the response
         return new GitLabSession(response.getBody().getObject());
+    }
+
+    /**
+     * Returns the user the API is authenticated with.
+     *
+     * The authenticated user is the owner of the private token.
+     *
+     * @return the authenticated user
+     * @throws ApiConnectionFailureException if the connection with the API failed
+     * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
+     */
+    public GitLabUser getCurrentUser()
+            throws ApiConnectionFailureException, AuthenticationFailedException {
+        final HttpResponse<JsonNode> response;
+        try {
+            // send request to API
+            response = Unirest.get(getApiUrl() + "/user")
+                    .field("private_token", privateToken)
+                    .asJson();
+        } catch (UnirestException e) {
+            throw new ApiConnectionFailureException("Could not connect to API", e);
+        }
+
+        // check if the request was successful
+        if (response.getCode() != HTTP_200_OK) {
+            throw new AuthenticationFailedException("Invalid private token");
+        }
+
+        // create a user object with the response
+        return new GitLabUser(response.getBody().getObject());
     }
 
     /**

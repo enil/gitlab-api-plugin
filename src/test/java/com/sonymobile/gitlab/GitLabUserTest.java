@@ -53,7 +53,7 @@ public class GitLabUserTest {
      * Tests whether the correct user ID is set.
      */
     @Test
-    public void testId() {
+    public void getId() {
         assertThat(MockData.USER_ID, is(user.getId()));
     }
 
@@ -61,7 +61,7 @@ public class GitLabUserTest {
      * Tests whether the correct username is set.
      */
     @Test
-    public void testUsername() {
+    public void getUsername() {
         assertThat(MockData.USER_USERNAME, is(user.getUsername()));
     }
 
@@ -69,7 +69,7 @@ public class GitLabUserTest {
      * Tests whether the correct email address is set.
      */
     @Test
-    public void testEmail() {
+    public void getEmail() {
         assertThat(MockData.USER_EMAIL, is(user.getEmail()));
     }
 
@@ -77,7 +77,7 @@ public class GitLabUserTest {
      * Tests whether the correct name is set.
      */
     @Test
-    public void testName() {
+    public void getName() {
         assertThat(MockData.USER_NAME, is(user.getName()));
     }
 
@@ -85,7 +85,7 @@ public class GitLabUserTest {
      * Tests whether the correct block status is set.
      */
     @Test
-    public void testIsBlocked() {
+    public void isBlocked() {
         assertThat(false, is(user.isBlocked()));
     }
 
@@ -95,7 +95,7 @@ public class GitLabUserTest {
      * The construct should throw {@link IllegalArgumentException} when keys are missing.
      */
     @Test(expected=IllegalArgumentException.class)
-    public void testMissingKeys() {
+    public void createUserWithMissingKeys() {
         // use empty JSON object
         new GitLabSession(new JSONObject());
     }

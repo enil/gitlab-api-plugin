@@ -26,15 +26,18 @@ package com.sonymobile.gitlab.api;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.sonymobile.gitlab.GitLabSession;
+import com.sonymobile.gitlab.GitLabUser;
 import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
 import com.sonymobile.gitlab.helpers.MockData;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -71,9 +74,9 @@ public class GitLabApiClientTest {
      * @throws AuthenticationFailedException if the authentication failed
      */
     @Test
-    public void testGettingValidSession()
+    public void openSessionWithValidCredentials()
             throws ApiConnectionFailureException, AuthenticationFailedException {
-        // stub the request to get a session that is expected
+        // stub for expected request to get a session
         stubFor(post(urlEqualTo("/api/v3/session"))
                 .withRequestBody(equalTo("login=username&password=password"))
                 .willReturn(aResponse()
@@ -98,9 +101,9 @@ public class GitLabApiClientTest {
      * Uses {@link GitLabApiClient#getSession(String, String)} to get a session.
      */
     @Test(expected=AuthenticationFailedException.class)
-    public void testGettingInvalidSession()
+    public void openSessionWithInvalidCredentials()
             throws AuthenticationFailedException, ApiConnectionFailureException {
-        // stub for request to get an error code
+        // stub for expected request to get a session
         stubFor(post(urlEqualTo("/api/v3/session"))
                 .withRequestBody(equalTo("login=username&password=invalidpassword"))
                 .willReturn(aResponse()
@@ -108,5 +111,52 @@ public class GitLabApiClientTest {
 
         // try to get a session from the API and expect it to throw and exception
         client.getSession("username", "invalidpassword");
+    }
+
+    /**
+     * Tests getting the authenticated user with a valid token.
+     *
+     * Uses {@link GitLabApiClient#getCurrentUser()} to get the user.
+     *
+     * @throws ApiConnectionFailureException if the connection failed
+     * @throws AuthenticationFailedException if the authentication failed
+     */
+    @Test
+    public void getCurrentUserWithValidPrivateToken()
+            throws AuthenticationFailedException, ApiConnectionFailureException {
+        // stub for expected request to get the current user
+        stubFor(get(urlEqualTo("/api/v3/user?private_token=" + MockData.PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBody(MockData.VALID_USER.toString())));
+
+        // get the current user
+        GitLabUser user = client.getCurrentUser();
+
+        // check that the values of the user are correct
+        assertThat(MockData.USER_ID, is(user.getId()));
+        assertThat(MockData.USER_USERNAME, is(user.getUsername()));
+        assertThat(MockData.USER_EMAIL, is(user.getEmail()));
+        assertThat(MockData.USER_NAME, is(user.getName()));
+        assertThat(false, is(user.isBlocked()));
+    }
+
+    /**
+     * Tests attempting to get the authenticated user with invalid token.
+     *
+     * Uses {@link GitLabApiClient#getCurrentUser()} to get the user.
+     *
+     * @throws ApiConnectionFailureException if the connection failed
+     * @throws AuthenticationFailedException if the authentication failed     */
+    @Test(expected=AuthenticationFailedException.class)
+    public void getCurrentUserWithInvalidPrivateToken()
+            throws AuthenticationFailedException, ApiConnectionFailureException {
+        // stub for expected request to get the current user
+        stubFor(get(urlEqualTo("/api/v3/user?private_token=" + MockData.PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(401)));
+
+        // try to get the current user from the API and expect it to throw and exception
+        client.getCurrentUser();
     }
 }

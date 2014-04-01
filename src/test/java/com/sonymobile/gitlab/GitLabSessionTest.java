@@ -53,7 +53,7 @@ public class GitLabSessionTest {
      * Tests whether the correct user ID is set.
      */
     @Test
-    public void testId() {
+    public void getId() {
         assertThat(MockData.USER_ID, is(session.getId()));
     }
 
@@ -61,7 +61,7 @@ public class GitLabSessionTest {
      * Tests whether the correct username is set.
      */
     @Test
-    public void testUsername() {
+    public void getUsername() {
         assertThat(MockData.USER_USERNAME, is(session.getUsername()));
     }
 
@@ -69,7 +69,7 @@ public class GitLabSessionTest {
      * Tests whether the correct email address is set.
      */
     @Test
-    public void testEmail() {
+    public void getEmail() {
         assertThat(MockData.USER_EMAIL, is(session.getEmail()));
     }
 
@@ -77,7 +77,7 @@ public class GitLabSessionTest {
      * Tests whether the correct name is set.
      */
     @Test
-    public void testName() {
+    public void getName() {
         assertThat(MockData.USER_NAME, is(session.getName()));
     }
 
@@ -85,7 +85,7 @@ public class GitLabSessionTest {
      * Tests whether the correct private token is set.
      */
     @Test
-    public void testPrivateToken() {
+    public void getPrivateToken() {
         assertThat(MockData.PRIVATE_TOKEN, is(session.getPrivateToken()));
     }
 
@@ -93,7 +93,7 @@ public class GitLabSessionTest {
      * Tests whether the correct block status is set.
      */
     @Test
-    public void testIsBlocked() {
+    public void isBlocked() {
         assertThat(false, is(session.isBlocked()));
     }
 
@@ -103,7 +103,7 @@ public class GitLabSessionTest {
      * The construct should throw {@link java.lang.IllegalArgumentException} when keys are missing.
      */
     @Test(expected=IllegalArgumentException.class)
-    public void testMissingKeys() {
+    public void createSessionWithMissingKeys() {
         // use empty JSON object
         new GitLabSession(new JSONObject());
     }
