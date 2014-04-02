@@ -32,6 +32,7 @@ import com.sonymobile.gitlab.GitLabSession;
 import com.sonymobile.gitlab.GitLabUser;
 import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
+
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.HttpClientBuilder;
 
@@ -209,5 +210,21 @@ public class GitLabApiClient {
      */
     private String getApiUrl() {
         return host + "/api/v3";
+    }
+
+    /**
+     * Tests if a connection can be established with the given parameters.
+     * 
+     * @param serverUrl the GitLab host URL
+     * @param privateToken the GitLab private token
+     * @param proxyHost the http proxy host
+     * @param proxyPort the http proxy port
+     * @throws ApiConnectionFailureException if a connection to the API could not be found
+     * @throws AuthenticationFailedException if the private token is incorrect
+     */
+    public static void testConnection(String host, String privateToken, String proxyHost, int proxyPort)
+            throws ApiConnectionFailureException, AuthenticationFailedException {
+        
+        new GitLabApiClient(host, privateToken, proxyHost, proxyPort).getCurrentUser();
     }
 }
