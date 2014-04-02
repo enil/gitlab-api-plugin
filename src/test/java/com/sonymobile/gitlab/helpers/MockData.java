@@ -49,8 +49,8 @@ public final class MockData {
         VALID_SESSION
                 .put("id",              USER_ID)
                 .put("username",        USER_USERNAME)
-                .put("email", USER_EMAIL)
-                .put("name", USER_NAME)
+                .put("email",           USER_EMAIL)
+                .put("name",            USER_NAME)
                 .put("private_token",   PRIVATE_TOKEN)
                 .put("blocked",         false);
     }
@@ -61,7 +61,7 @@ public final class MockData {
         VALID_USER
                 .put("id",              USER_ID)
                 .put("username",        USER_USERNAME)
-                .put("email", USER_EMAIL)
+                .put("email",           USER_EMAIL)
                 .put("name",            USER_NAME)
                 .put("private_token",   PRIVATE_TOKEN)
                 .put("state",           "active");
