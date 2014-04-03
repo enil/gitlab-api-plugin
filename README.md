@@ -38,7 +38,7 @@ gitlab-api-client is simple to install with maven, just add the following lines 
         <dependency>
             <groupId>com.sonymobile.gitlab</groupId>
             <artifactId>gitlab-api-client</artifactId>
-            <version>0.1</version>
+            <version>0.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
