@@ -29,6 +29,9 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+
+import static com.sonymobile.gitlab.helpers.FileHelpers.loadJsonObjectFromFile;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -43,10 +46,12 @@ public class GitLabUserTest {
 
     /**
      * Sets up the session object with reasonable values.
+     *
+     * @throws java.io.IOException if reading of the JSON file failed
      */
     @Before
-    public void setUp() {
-        user = new GitLabUser(MockData.VALID_USER);
+    public void setUp() throws IOException {
+        user = new GitLabUser(loadJsonObjectFromFile("api/v3/user/withValidPrivateToken.json"));
     }
 
     /**
