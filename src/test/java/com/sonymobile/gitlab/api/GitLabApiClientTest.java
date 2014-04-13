@@ -142,7 +142,7 @@ public class GitLabApiClientTest {
         stubFor(get(urlEqualTo("/api/v3/user?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withBodyFile("api/v3/user/withValidPrivateToken.json")));
+                        .withBodyFile("api/v3/users/withValidPrivateToken.json")));
 
         // get the current user
         GitLabUser user = client.getCurrentUser();
