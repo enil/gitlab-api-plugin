@@ -24,7 +24,6 @@
 
 package com.sonymobile.gitlab;
 
-import com.sonymobile.gitlab.helpers.MockData;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +58,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void getId() {
-        assertThat(MockData.USER_ID, is(session.getId()));
+        assertThat(1, is(session.getId()));
     }
 
     /**
@@ -67,7 +66,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void getUsername() {
-        assertThat(MockData.USER_USERNAME, is(session.getUsername()));
+        assertThat("username", is(session.getUsername()));
     }
 
     /**
@@ -75,7 +74,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void getEmail() {
-        assertThat(MockData.USER_EMAIL, is(session.getEmail()));
+        assertThat("user@example.com", is(session.getEmail()));
     }
 
     /**
@@ -83,7 +82,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void getName() {
-        assertThat(MockData.USER_NAME, is(session.getName()));
+        assertThat("User Name", is(session.getName()));
     }
 
     /**
@@ -91,7 +90,7 @@ public class GitLabSessionTest {
      */
     @Test
     public void getPrivateToken() {
-        assertThat(MockData.PRIVATE_TOKEN, is(session.getPrivateToken()));
+        assertThat("0123456789abcdef", is(session.getPrivateToken()));
     }
 
     /**

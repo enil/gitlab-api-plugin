@@ -24,7 +24,6 @@
 
 package com.sonymobile.gitlab;
 
-import com.sonymobile.gitlab.helpers.MockData;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +58,7 @@ public class GitLabUserTest {
      */
     @Test
     public void getId() {
-        assertThat(MockData.USER_ID, is(user.getId()));
+        assertThat(1, is(user.getId()));
     }
 
     /**
@@ -67,7 +66,7 @@ public class GitLabUserTest {
      */
     @Test
     public void getUsername() {
-        assertThat(MockData.USER_USERNAME, is(user.getUsername()));
+        assertThat("username", is(user.getUsername()));
     }
 
     /**
@@ -75,7 +74,7 @@ public class GitLabUserTest {
      */
     @Test
     public void getEmail() {
-        assertThat(MockData.USER_EMAIL, is(user.getEmail()));
+        assertThat("user@example.com", is(user.getEmail()));
     }
 
     /**
@@ -83,7 +82,7 @@ public class GitLabUserTest {
      */
     @Test
     public void getName() {
-        assertThat(MockData.USER_NAME, is(user.getName()));
+        assertThat("User Name", is(user.getName()));
     }
 
     /**
