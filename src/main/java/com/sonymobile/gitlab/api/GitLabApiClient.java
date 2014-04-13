@@ -28,13 +28,18 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.sonymobile.gitlab.GitLabGroup;
 import com.sonymobile.gitlab.GitLabSession;
 import com.sonymobile.gitlab.GitLabUser;
 import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
-
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A client for communicating with a GitLab API.
@@ -155,6 +160,44 @@ public class GitLabApiClient {
 
         // create a session object with the response
         return new GitLabSession(response.getBody().getObject());
+    }
+
+    /**
+     * Fetches the group the authenticated user can see.
+     *
+     * Admin users can see all groups, others can only see groups they are members of.
+     *
+     * @return a list of groups
+     * @throws ApiConnectionFailureException if the connection with the API failed
+     * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
+     */
+    public List<GitLabGroup> getGroups()
+            throws ApiConnectionFailureException, AuthenticationFailedException {
+        final HttpResponse<JsonNode> response;
+        try {
+            // send request to API
+            response = Unirest.get(getApiUrl() + "/groups")
+                    .field("private_token", privateToken)
+                    .asJson();
+        } catch (UnirestException e) {
+            throw new ApiConnectionFailureException("Could not connect to API", e);
+        }
+
+        // check if the request was successful
+        if (response.getCode() != HTTP_200_OK) {
+            throw new AuthenticationFailedException("Invalid private token");
+        }
+
+        // get the json array with the groups from the response
+        JSONArray jsonArray = response.getBody().getArray();
+
+        // convert all objects in the json array to groups
+        ArrayList<GitLabGroup> groups = new ArrayList<GitLabGroup>(jsonArray.length());
+        for (int index = 0; index < jsonArray.length(); index++) {
+            groups.add(new GitLabGroup(jsonArray.getJSONObject(index)));
+        }
+
+        return groups;
     }
 
     /**

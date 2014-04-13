@@ -25,6 +25,7 @@
 package com.sonymobile.gitlab.api;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.sonymobile.gitlab.GitLabGroup;
 import com.sonymobile.gitlab.GitLabSession;
 import com.sonymobile.gitlab.GitLabUser;
 import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
@@ -34,6 +35,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.List;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -42,6 +45,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static java.lang.Integer.parseInt;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -77,8 +81,6 @@ public class GitLabApiClientTest {
     /**
      * Tests getting a session with valid credentials.
      *
-     * Uses {@link GitLabApiClient#getSession(String, String)} to get a session.
-     *
      * @throws ApiConnectionFailureException if the connection failed
      * @throws AuthenticationFailedException if the authentication failed
      */
@@ -107,8 +109,6 @@ public class GitLabApiClientTest {
     /**
      * Tests attempting to get a session with invalid credentials.
      *
-     * Uses {@link GitLabApiClient#getSession(String, String)} to get a session.
-     *
      * @throws ApiConnectionFailureException if the connection failed
      * @throws AuthenticationFailedException if the authentication failed
      */
@@ -119,7 +119,7 @@ public class GitLabApiClientTest {
         stubFor(post(urlEqualTo("/api/v3/session"))
                 .withRequestBody(equalTo("login=username&password=invalidpassword"))
                 .willReturn(aResponse()
-                .withStatus(401)));
+                        .withStatus(401)));
         // authentication should fail
         thrown.expect(AuthenticationFailedException.class);
 
@@ -128,9 +128,54 @@ public class GitLabApiClientTest {
     }
 
     /**
-     * Tests getting the authenticated user with a valid token.
+     * Tests getting all groups for the authenticated user with ha valid token.
      *
-     * Uses {@link GitLabApiClient#getCurrentUser()} to get the user.
+     * @throws ApiConnectionFailureException if the connection failed
+     * @throws AuthenticationFailedException if the authentication failed
+     */
+    @Test
+    public void getGroupsWithValidPrivateToken()
+            throws AuthenticationFailedException, ApiConnectionFailureException {
+        // stub for expected request to get all groups
+        stubFor(get(urlEqualTo("/api/v3/groups?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBodyFile("/api/v3/groups/all.json")));
+        // get the groups
+        List<GitLabGroup> groups = client.getGroups();
+
+        assertThat(groups, hasSize(1));
+        // pick out the first (and only) group
+
+        GitLabGroup group = groups.get(0);
+        assertThat(2, is(group.getId()));
+        assertThat("Group Name", is(group.getName()));
+        assertThat("groupname", is(group.getPath()));
+    }
+
+    /**
+     * Tests attempting to get groups for the authenticated user with invalid token.
+     *
+     * @throws ApiConnectionFailureException if the connection failed
+     * @throws AuthenticationFailedException if the authentication failed
+     */
+    @Test
+    public void getGroupsWithInvalidPrivateToken()
+            throws AuthenticationFailedException, ApiConnectionFailureException {
+        // stub for expected request to get all groups
+        stubFor(get(urlEqualTo("/api/v3/groups?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(401)));
+
+        // authentication should fail
+        thrown.expect(AuthenticationFailedException.class);
+
+        // try to get the groups from the API and expect it to throw and exception
+        client.getGroups();
+    }
+
+    /**
+     * Tests getting the authenticated user with a valid token.
      *
      * @throws ApiConnectionFailureException if the connection failed
      * @throws AuthenticationFailedException if the authentication failed
@@ -158,11 +203,9 @@ public class GitLabApiClientTest {
     /**
      * Tests attempting to get the authenticated user with invalid token.
      *
-     * Uses {@link GitLabApiClient#getCurrentUser()} to get the user.
-     *
      * @throws ApiConnectionFailureException if the connection failed
      * @throws AuthenticationFailedException if the authentication failed
-     * */
+     */
     @Test
     public void getCurrentUserWithInvalidPrivateToken()
             throws AuthenticationFailedException, ApiConnectionFailureException {
