@@ -24,11 +24,13 @@
 
 package com.sonymobile.gitlab;
 
-import com.sonymobile.gitlab.helpers.MockData;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+
+import static com.sonymobile.gitlab.helpers.FileHelpers.loadJsonObjectFromFile;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -42,11 +44,13 @@ public class GitLabUserTest {
     private GitLabUser user;
 
     /**
-     * Sets up the session object with reasonable values.
+     * Loads the user object from a JSON file.
+     *
+     * @throws java.io.IOException if reading of the JSON file failed
      */
     @Before
-    public void setUp() {
-        user = new GitLabUser(MockData.VALID_USER);
+    public void setUp() throws IOException {
+        user = new GitLabUser(loadJsonObjectFromFile("api/v3/users/withValidPrivateToken.json"));
     }
 
     /**
@@ -54,7 +58,7 @@ public class GitLabUserTest {
      */
     @Test
     public void getId() {
-        assertThat(MockData.USER_ID, is(user.getId()));
+        assertThat(1, is(user.getId()));
     }
 
     /**
@@ -62,7 +66,7 @@ public class GitLabUserTest {
      */
     @Test
     public void getUsername() {
-        assertThat(MockData.USER_USERNAME, is(user.getUsername()));
+        assertThat("username", is(user.getUsername()));
     }
 
     /**
@@ -70,7 +74,7 @@ public class GitLabUserTest {
      */
     @Test
     public void getEmail() {
-        assertThat(MockData.USER_EMAIL, is(user.getEmail()));
+        assertThat("user@example.com", is(user.getEmail()));
     }
 
     /**
@@ -78,7 +82,7 @@ public class GitLabUserTest {
      */
     @Test
     public void getName() {
-        assertThat(MockData.USER_NAME, is(user.getName()));
+        assertThat("User Name", is(user.getName()));
     }
 
     /**

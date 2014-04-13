@@ -25,15 +25,17 @@
 package com.sonymobile.gitlab.api;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.sonymobile.gitlab.GitLabGroup;
 import com.sonymobile.gitlab.GitLabSession;
 import com.sonymobile.gitlab.GitLabUser;
 import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
-import com.sonymobile.gitlab.helpers.MockData;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -41,7 +43,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static java.lang.Integer.parseInt;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -50,9 +54,18 @@ import static org.junit.Assert.assertThat;
  * @author Emil Nilsson
  */
 public class GitLabApiClientTest {
+    /** The port to run WireMock on. */
+    private static final int WIREMOCK_PORT = parseInt(System.getProperty("com.sonymobile.gitlab.api.wiremock.port",
+            "6789"));
+
+    /** The private token. */
+    private static final String PRIVATE_TOKEN = "0123456789abcdef";
+
     /** A rule for setting up a mock server for every test. */
-    @Rule
-    public WireMockRule serverRule = new WireMockRule(9090);
+    @Rule public WireMockRule serverRule = new WireMockRule(WIREMOCK_PORT);
+
+    /** A rule for catching expected exceptions. */
+    @Rule public ExpectedException thrown = ExpectedException.none();
 
     /** The GitLab API client to test against. */
     private GitLabApiClient client;
@@ -62,13 +75,11 @@ public class GitLabApiClientTest {
      */
     @Before
     public void setUp() {
-        client = new GitLabApiClient("http://localhost:9090", MockData.PRIVATE_TOKEN);
+        client = new GitLabApiClient("http://localhost:" + WIREMOCK_PORT, PRIVATE_TOKEN);
     }
 
     /**
      * Tests getting a session with valid credentials.
-     *
-     * Uses {@link GitLabApiClient#getSession(String, String)} to get a session.
      *
      * @throws ApiConnectionFailureException if the connection failed
      * @throws AuthenticationFailedException if the authentication failed
@@ -81,42 +92,90 @@ public class GitLabApiClientTest {
                 .withRequestBody(equalTo("login=username&password=password"))
                 .willReturn(aResponse()
                         .withStatus(201)
-                        .withBody(MockData.VALID_SESSION.toString())));
+                        .withBodyFile("/api/v3/session/withValidCredentials.json")));
 
         // get a session from the API and make sure it succeeds
         GitLabSession session = client.getSession("username", "password");
 
         // check that the values of the session are correct
-        assertThat(MockData.USER_ID, is(session.getId()));
-        assertThat(MockData.USER_USERNAME, is(session.getUsername()));
-        assertThat(MockData.USER_EMAIL, is(session.getEmail()));
-        assertThat(MockData.USER_NAME, is(session.getName()));
-        assertThat(MockData.PRIVATE_TOKEN, is(session.getPrivateToken()));
-        assertThat(false, is(session.isBlocked()));
+        assertThat(1,                   is(session.getId()));
+        assertThat("username",          is(session.getUsername()));
+        assertThat("user@example.com",  is(session.getEmail()));
+        assertThat("User Name",         is(session.getName()));
+        assertThat(PRIVATE_TOKEN,       is(session.getPrivateToken()));
+        assertThat(false,               is(session.isBlocked()));
     }
 
     /**
      * Tests attempting to get a session with invalid credentials.
      *
-     * Uses {@link GitLabApiClient#getSession(String, String)} to get a session.
+     * @throws ApiConnectionFailureException if the connection failed
+     * @throws AuthenticationFailedException if the authentication failed
      */
-    @Test(expected=AuthenticationFailedException.class)
+    @Test
     public void openSessionWithInvalidCredentials()
             throws AuthenticationFailedException, ApiConnectionFailureException {
         // stub for expected request to get a session
         stubFor(post(urlEqualTo("/api/v3/session"))
                 .withRequestBody(equalTo("login=username&password=invalidpassword"))
                 .willReturn(aResponse()
-                .withStatus(401)));
+                        .withStatus(401)));
+        // authentication should fail
+        thrown.expect(AuthenticationFailedException.class);
 
         // try to get a session from the API and expect it to throw and exception
         client.getSession("username", "invalidpassword");
     }
 
     /**
-     * Tests getting the authenticated user with a valid token.
+     * Tests getting all groups for the authenticated user with ha valid token.
      *
-     * Uses {@link GitLabApiClient#getCurrentUser()} to get the user.
+     * @throws ApiConnectionFailureException if the connection failed
+     * @throws AuthenticationFailedException if the authentication failed
+     */
+    @Test
+    public void getGroupsWithValidPrivateToken()
+            throws AuthenticationFailedException, ApiConnectionFailureException {
+        // stub for expected request to get all groups
+        stubFor(get(urlEqualTo("/api/v3/groups?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBodyFile("/api/v3/groups/all.json")));
+        // get the groups
+        List<GitLabGroup> groups = client.getGroups();
+
+        assertThat(groups, hasSize(1));
+        // pick out the first (and only) group
+
+        GitLabGroup group = groups.get(0);
+        assertThat(2, is(group.getId()));
+        assertThat("Group Name", is(group.getName()));
+        assertThat("groupname", is(group.getPath()));
+    }
+
+    /**
+     * Tests attempting to get groups for the authenticated user with invalid token.
+     *
+     * @throws ApiConnectionFailureException if the connection failed
+     * @throws AuthenticationFailedException if the authentication failed
+     */
+    @Test
+    public void getGroupsWithInvalidPrivateToken()
+            throws AuthenticationFailedException, ApiConnectionFailureException {
+        // stub for expected request to get all groups
+        stubFor(get(urlEqualTo("/api/v3/groups?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(401)));
+
+        // authentication should fail
+        thrown.expect(AuthenticationFailedException.class);
+
+        // try to get the groups from the API and expect it to throw and exception
+        client.getGroups();
+    }
+
+    /**
+     * Tests getting the authenticated user with a valid token.
      *
      * @throws ApiConnectionFailureException if the connection failed
      * @throws AuthenticationFailedException if the authentication failed
@@ -125,36 +184,37 @@ public class GitLabApiClientTest {
     public void getCurrentUserWithValidPrivateToken()
             throws AuthenticationFailedException, ApiConnectionFailureException {
         // stub for expected request to get the current user
-        stubFor(get(urlEqualTo("/api/v3/user?private_token=" + MockData.PRIVATE_TOKEN))
+        stubFor(get(urlEqualTo("/api/v3/user?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withBody(MockData.VALID_USER.toString())));
+                        .withBodyFile("api/v3/users/withValidPrivateToken.json")));
 
         // get the current user
         GitLabUser user = client.getCurrentUser();
 
         // check that the values of the user are correct
-        assertThat(MockData.USER_ID, is(user.getId()));
-        assertThat(MockData.USER_USERNAME, is(user.getUsername()));
-        assertThat(MockData.USER_EMAIL, is(user.getEmail()));
-        assertThat(MockData.USER_NAME, is(user.getName()));
-        assertThat(false, is(user.isBlocked()));
+        assertThat(1,                   is(user.getId()));
+        assertThat("username",          is(user.getUsername()));
+        assertThat("user@example.com",  is(user.getEmail()));
+        assertThat("User Name",         is(user.getName()));
+        assertThat(false,               is(user.isBlocked()));
     }
 
     /**
      * Tests attempting to get the authenticated user with invalid token.
      *
-     * Uses {@link GitLabApiClient#getCurrentUser()} to get the user.
-     *
      * @throws ApiConnectionFailureException if the connection failed
-     * @throws AuthenticationFailedException if the authentication failed     */
-    @Test(expected=AuthenticationFailedException.class)
+     * @throws AuthenticationFailedException if the authentication failed
+     */
+    @Test
     public void getCurrentUserWithInvalidPrivateToken()
             throws AuthenticationFailedException, ApiConnectionFailureException {
         // stub for expected request to get the current user
-        stubFor(get(urlEqualTo("/api/v3/user?private_token=" + MockData.PRIVATE_TOKEN))
+        stubFor(get(urlEqualTo("/api/v3/user?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(401)));
+        // authentication should fail
+        thrown.expect(AuthenticationFailedException.class);
 
         // try to get the current user from the API and expect it to throw and exception
         client.getCurrentUser();
