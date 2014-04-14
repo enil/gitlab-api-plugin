@@ -29,6 +29,8 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.GetRequest;
+import com.mashape.unirest.request.HttpRequestWithBody;
+import com.mashape.unirest.request.body.MultipartBody;
 import com.sonymobile.gitlab.GitLabGroup;
 import com.sonymobile.gitlab.GitLabSession;
 import com.sonymobile.gitlab.GitLabUser;
@@ -148,24 +150,12 @@ public class GitLabApiClient {
      */
     public GitLabSession getSession(final String login, final String password)
             throws ApiConnectionFailureException, AuthenticationFailedException {
-        final HttpResponse<JsonNode> response;
-        try {
-            // send request to API
-            response = Unirest.post(getApiUrl() + "/session")
-                    .field("login", login)
-                    .field("password", password)
-                    .asJson();
-        } catch (UnirestException e) {
-            throw new ApiConnectionFailureException("Could not connect to API", e);
-        }
-
-        // check if the request was successful
-        if (response.getCode() != HTTP_201_CREATED) {
-            throw new AuthenticationFailedException("Invalid user credentials");
-        }
+        final Map<String, Object> fields = new HashMap<String, Object>();
+        fields.put("login", login);
+        fields.put("password", password);
 
         // create a session object with the response
-        return new GitLabSession(response.getBody().getObject());
+        return new GitLabSession(post("/session", fields, false).getBody().getObject());
     }
 
     /**
@@ -179,11 +169,8 @@ public class GitLabApiClient {
      */
     public List<GitLabGroup> getGroups()
             throws ApiConnectionFailureException, AuthenticationFailedException {
-        final Map<String, String> fields = new HashMap<String, String>();
-        fields.put("private_token", privateToken);
-
         // get the json array with the groups from the response
-        JSONArray jsonArray = get("/groups", fields).getBody().getArray();
+        JSONArray jsonArray = get("/groups", null).getBody().getArray();
 
         // convert all objects in the json array to groups
         ArrayList<GitLabGroup> groups = new ArrayList<GitLabGroup>(jsonArray.length());
@@ -205,11 +192,8 @@ public class GitLabApiClient {
      */
     public GitLabUser getCurrentUser()
             throws ApiConnectionFailureException, AuthenticationFailedException {
-        final Map<String, String> fields = new HashMap<String, String>();
-        fields.put("private_token", privateToken);
-
         // create a user object with the response
-        return new GitLabUser(get("/user", fields).getBody().getObject());
+        return new GitLabUser(get("/user", null).getBody().getObject());
     }
 
 
@@ -225,10 +209,10 @@ public class GitLabApiClient {
     /**
      * Tests if a connection can be established with the given parameters.
      *
-     * @param host the GitLab host URL
+     * @param host         the GitLab host URL
      * @param privateToken the GitLab private token
-     * @param proxyHost the http proxy host
-     * @param proxyPort the http proxy port
+     * @param proxyHost    the http proxy host
+     * @param proxyPort    the http proxy port
      * @throws ApiConnectionFailureException if a connection to the API could not be found
      * @throws AuthenticationFailedException if the private token is incorrect
      */
@@ -254,21 +238,37 @@ public class GitLabApiClient {
     }
 
     /**
-     * Makes a GET request to the API.
+     * Makes a GET request to the API with the private token.
      *
-     * @param path the path relative to the API
-     * @param fields the fields for the request
+     * @param path   the path relative to the API
+     * @param fields the fields for the request (can be null)
      * @return an HTTP response containing a JSON body
      * @throws ApiConnectionFailureException if a connection to the API could not be found
      * @throws AuthenticationFailedException if the private token is incorrect
      */
-    private HttpResponse<JsonNode> get(String path, Map<String, String> fields)
+    private HttpResponse<JsonNode> get(String path, Map<String, Object> fields)
+            throws ApiConnectionFailureException, AuthenticationFailedException {
+        // include private token in request
+        return get(path, fields, true);
+    }
+
+    /**
+     * Makes a GET request to the API.
+     *
+     * @param path                the path relative to the API
+     * @param fields              the fields for the request (can be null)
+     * @param includePrivateToken if the private token should be added to the fields
+     * @return an HTTP response containing a JSON body
+     * @throws ApiConnectionFailureException if a connection to the API could not be found
+     * @throws AuthenticationFailedException if the private token is incorrect
+     */
+    private HttpResponse<JsonNode> get(String path, Map<String, Object> fields, boolean includePrivateToken)
             throws ApiConnectionFailureException, AuthenticationFailedException {
         final GetRequest request = Unirest.get(getApiUrl() + path);
 
-        // add all fields
-        for (Map.Entry<String, String> entry : fields.entrySet()) {
-            request.field(entry.getKey(), entry.getValue());
+        request.fields(fields);
+        if (includePrivateToken) {
+            request.field("private_token", privateToken);
         }
 
         final HttpResponse<JsonNode> response;
@@ -280,6 +280,55 @@ public class GitLabApiClient {
 
         // check if the request was successful
         if (response.getCode() != HTTP_200_OK) {
+            throw new AuthenticationFailedException("Invalid private token");
+        }
+
+        return response;
+    }
+
+    /**
+     * Make a POST request to the API with the private token.
+     *
+     * @param path   the path relative to the API
+     * @param fields the fields for the request
+     * @return an HTTP response containing a JSON body
+     * @throws ApiConnectionFailureException if a connection to the API could not be found
+     * @throws AuthenticationFailedException if the private token is incorrect
+     */
+    private HttpResponse<JsonNode> post(String path, Map<String, Object> fields)
+            throws ApiConnectionFailureException, AuthenticationFailedException {
+        // include private token in request
+        return post(path, fields, true);
+    }
+
+    /**
+     * Make a POST request to the API.
+     *
+     * @param path                the path relative to the API
+     * @param fields              the fields for the request
+     * @param includePrivateToken if the private token should be added to the fields
+     * @return an HTTP response containing a JSON body
+     * @throws ApiConnectionFailureException if a connection to the API could not be found
+     * @throws AuthenticationFailedException if the private token is incorrect
+     */
+    private HttpResponse<JsonNode> post(String path, Map<String, Object> fields, boolean includePrivateToken)
+            throws ApiConnectionFailureException, AuthenticationFailedException {
+        HttpRequestWithBody request = Unirest.post(getApiUrl() + path);
+
+        final MultipartBody body = request.fields(fields);
+        if (includePrivateToken) {
+            body.field("private_token", privateToken);
+        }
+
+        final HttpResponse<JsonNode> response;
+        try {
+            response = request.asJson();
+        } catch (UnirestException e) {
+            throw new ApiConnectionFailureException("Could not connect to API", e);
+        }
+
+        // check if the request was successful
+        if (response.getCode() != HTTP_201_CREATED) {
             throw new AuthenticationFailedException("Invalid private token");
         }
 
