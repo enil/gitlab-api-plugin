@@ -6,7 +6,8 @@ A client for [GitLab][] REST API written in Java.
 
 > The MIT License (MIT)
 >
-> Copyright (c) 2014 Sony Mobile Communications AB. All rights reserved.
+> Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB.
+> All rights reserved.
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy
 > of this software and associated documentation files (the "Software"), to deal
