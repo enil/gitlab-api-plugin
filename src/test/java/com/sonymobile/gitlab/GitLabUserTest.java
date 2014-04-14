@@ -32,6 +32,7 @@ import java.io.IOException;
 
 import static com.sonymobile.gitlab.helpers.FileHelpers.loadJsonObjectFromFile;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -102,5 +103,13 @@ public class GitLabUserTest {
     public void createUserWithMissingKeys() {
         // use empty JSON object
         new GitLabSession(new JSONObject());
+    }
+
+    /**
+     * Tests whether toString() returns the group name.
+     */
+    @Test
+    public void convertToString() {
+        assertThat(user, hasToString("User Name"));
     }
 }

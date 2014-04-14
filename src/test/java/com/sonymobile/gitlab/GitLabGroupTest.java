@@ -32,6 +32,7 @@ import java.io.IOException;
 
 import static com.sonymobile.gitlab.helpers.FileHelpers.loadJsonObjectFromFile;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -75,5 +76,13 @@ public class GitLabGroupTest {
     @Test
     public void getPath() {
         assertThat("groupname", is(group.getPath()));
+    }
+
+    /**
+     * Tests whether toString() returns the group name.
+     */
+    @Test
+    public void convertToString() {
+        assertThat(group, hasToString("Group Name"));
     }
 }

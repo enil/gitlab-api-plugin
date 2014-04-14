@@ -84,4 +84,9 @@ public class GitLabGroup {
     public String getPath() {
         return path;
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }
