@@ -56,6 +56,13 @@ Use the static method `openSession(host, login, password)` to connect with user'
 
     GitLabApiClient client = new GitLabApiClient("http://demo.gitlab.com", "jsmith", "123456");
 
+It is possible to temporarily assume the identity of another user with the method `impersonate(privateToken)` using the
+private token of that user:
+
+    // prints the name of the user with the provided private token
+    System.out.println(client.impersonate("Wvjy2Krpb7y8xi93owUz").getCurrentUser().getName());
+    // prints "John Smith"
+
 ### Session
 
 It is possible to explicitly fetch a session using `getSession(login, password)` method on an existing client as opposed
@@ -65,10 +72,36 @@ It is possible to explicitly fetch a session using `getSession(login, password)`
     GitLabSession session = client.getSession("jsmith", "123456");
 
     // print the user's token
-    System.out.println(session.getPrivateToken());
-    // prints "Wvjy2Krpb7y8xi93owUz"
+    System.out.println("Private token: " + session.getPrivateToken());
+    // prints "Private token: Wvjy2Krpb7y8xi93owUz"
 
-The session is fetching with a `POST` request to [/session][session].
+The session is fetched with a `POST` request to [/session][session].
+
+### Current user
+
+It is possible to retrieve the current user, e.g. the user the private token belongs to, using the `getCurrentUser()`
+method:
+
+    GitLabUser user = client.getCurrentUser();
+
+    // print the user's name
+    System.out.println("Logged in user: " + user.getName());
+    // prints "Logged in user: [username]
+
+The current user is fetched with a `GET` request to [/user][currentuser].
+
+### Groups
+
+The method `getGroups()` can be used to fetch all groups accessible to the current user (administrators have access to
+ all groups):
+
+    // print the ID and name of all groups
+    for (final GitLabGroup group : client.getGroups()) {
+        System.out.println(group.getID() + ": " + group.getName());
+        // prints "1: [groupname]" and so on
+    }
+
+The groups are fetched with a `GET` request to [/groups][allgroups].
 
 ### Proxy
 
@@ -91,7 +124,8 @@ This can also be done from the command line when running your application:
 
     java -Dhttp.proxyHost=proxyhost -Dhttp.proxyPort=8080 MyApplication
 
-
 [GitLab]:       https://www.gitlab.com/
 [session]:      http://api.gitlab.org/session.html
+[currentuser]:  http://doc.gitlab.com/ce/api/users.html#current-user
+[allgroups]:    http://doc.gitlab.com/ce/api/groups.html#list-project-groups
 [javaproxy]:    http://docs.oracle.com/javase/6/docs/technotes/guides/net/proxies.html
