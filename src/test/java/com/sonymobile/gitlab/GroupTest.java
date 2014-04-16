@@ -27,7 +27,9 @@ package com.sonymobile.gitlab;
 
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 
@@ -37,80 +39,59 @@ import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.assertThat;
 
 /**
- * Unit tests for {@link GitLabUser}.
+ * Tests getting attributes from a {@link GitLabGroup}
  *
  * @author Emil Nilsson
  */
-public class GitLabUserTest {
-    /** The session object to test against. */
-    private GitLabUser user;
+public class GroupTest {
+    /** The group object to test against. */
+    private GitLabGroup group;
+
+    /** A rule for catching expected exceptions. */
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     /**
-     * Loads the user object from a JSON file.
+     * Loads the group object from a JSON file.
      *
      * @throws java.io.IOException if reading of the JSON file failed
      */
     @Before
     public void setUp() throws IOException {
-        user = new GitLabUser(loadJsonObjectFromFile("api/v3/users/withValidPrivateToken.json"));
+        group = new GitLabGroup(loadJsonObjectFromFile("api/v3/groups/byGroupId.json"));
     }
 
-    /**
-     * Tests whether the correct user ID is set.
-     */
     @Test
     public void getId() {
-        assertThat(1, is(user.getId()));
+        assertThat(2, is(group.getId()));
     }
 
-    /**
-     * Tests whether the correct username is set.
-     */
-    @Test
-    public void getUsername() {
-        assertThat("username", is(user.getUsername()));
-    }
-
-    /**
-     * Tests whether the correct email address is set.
-     */
-    @Test
-    public void getEmail() {
-        assertThat("user@example.com", is(user.getEmail()));
-    }
-
-    /**
-     * Tests whether the correct name is set.
-     */
     @Test
     public void getName() {
-        assertThat("User Name", is(user.getName()));
+        assertThat("Group Name", is(group.getName()));
+    }
+
+    @Test
+    public void getPath() {
+        assertThat("groupname", is(group.getPath()));
     }
 
     /**
-     * Tests whether the correct block status is set.
+     * Attempts to create a group with missing keys.
      */
     @Test
-    public void isBlocked() {
-        assertThat(false, is(user.isBlocked()));
-    }
-
-    /**
-     * Tests that creating a user fails if needed keys are missing.
-     *
-     * The construct should throw {@link IllegalArgumentException} when keys are missing.
-     */
-    @Test(expected=IllegalArgumentException.class)
-    public void createUserWithMissingKeys() {
+    public void createGroupWithMissingKeys() throws Exception {
+        // constructor should throw an exception
+        thrown.expect(IllegalArgumentException.class);
         // use empty JSON object
-        new GitLabSession(new JSONObject());
+        new GitLabGroup(new JSONObject());
     }
 
     /**
-     * Tests whether toString() returns the group name.
+     * Converts the group to a String, which should be the group name
      */
     @Test
     public void convertToString() {
-        assertThat(user, hasToString("User Name"));
+        assertThat(group, hasToString("Group Name"));
     }
 }

@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB.
- * All rights reserved.
+ * Copyright (c) 2014 Sony Mobile Communications AB. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,64 +24,79 @@
 
 package com.sonymobile.gitlab;
 
+import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 
 import static com.sonymobile.gitlab.helpers.FileHelpers.loadJsonObjectFromFile;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.assertThat;
 
 /**
- * Unit tests for {@link GitLabGroup}
+ * Tests getting attributes from a {@link GitLabSession}.
  *
  * @author Emil Nilsson
  */
-public class GitLabGroupTest {
-    /** The group object to test against. */
-    private GitLabGroup group;
+public class SessionTest {
+    /** The session object to test against. */
+    private GitLabSession session;
+
+    /** A rule for catching expected exceptions. */
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     /**
-     * Loads the group object from a JSON file.
+     * Loads the session object from a JSON file.
      *
      * @throws java.io.IOException if reading of the JSON file failed
      */
     @Before
     public void setUp() throws IOException {
-        group = new GitLabGroup(loadJsonObjectFromFile("api/v3/groups/byGroupId.json"));
+        session = new GitLabSession(loadJsonObjectFromFile("api/v3/session/withValidCredentials.json"));
     }
 
-    /**
-     * Tests whether the correct user ID is set.
-     */
     @Test
     public void getId() {
-        assertThat(2, is(group.getId()));
+        assertThat(1, is(session.getId()));
     }
 
-    /**
-     * Tests whether the correct group name is set.
-     */
+    @Test
+    public void getUsername() {
+        assertThat("username", is(session.getUsername()));
+    }
+
+    @Test
+    public void getEmail() {
+        assertThat("user@example.com", is(session.getEmail()));
+    }
+
     @Test
     public void getName() {
-        assertThat("Group Name", is(group.getName()));
+        assertThat("User Name", is(session.getName()));
+    }
+
+    @Test
+    public void getPrivateToken() {
+        assertThat("0123456789abcdef", is(session.getPrivateToken()));
+    }
+
+    @Test
+    public void isBlocked() {
+        assertThat(false, is(session.isBlocked()));
     }
 
     /**
-     * Tests whether the correct group path is set.
+     * Attempts to create a session with missing keys.
      */
     @Test
-    public void getPath() {
-        assertThat("groupname", is(group.getPath()));
-    }
-
-    /**
-     * Tests whether toString() returns the group name.
-     */
-    @Test
-    public void convertToString() {
-        assertThat(group, hasToString("Group Name"));
+    public void createSessionWithMissingKeys() throws Exception {
+        // constructor should throw an exception
+        thrown.expect(IllegalArgumentException.class);
+        // use empty JSON object
+        new GitLabSession(new JSONObject());
     }
 }

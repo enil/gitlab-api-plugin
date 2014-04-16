@@ -34,7 +34,11 @@ import java.io.IOException;
 import static org.apache.commons.io.FileUtils.readFileToString;
 
 /**
- * Created by emil on 4/13/14.
+ * Methods for loading JSON files from the test resources.
+ *
+ * This allows regular tests to easily access the same files used by WireMock using withBodyFile().
+ *
+ * @author Emil Nilsson
  */
 public class FileHelpers {
     /**
