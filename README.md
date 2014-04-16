@@ -54,7 +54,7 @@ The constructor `GitLabApiClient(host, privateToken)` sets up the client using a
 
 Use the static method `openSession(host, login, password)` to connect with user's login name and password:
 
-    GitLabApiClient client = new GitLabApiClient("http://demo.gitlab.com", "jsmith", "123456");
+    GitLabApiClient client = GitLabApiClient.openSession("http://demo.gitlab.com", "jsmith", "123456");
 
 It is possible to temporarily assume the identity of another user with the method `impersonate(privateToken)` using the
 private token of that user:
