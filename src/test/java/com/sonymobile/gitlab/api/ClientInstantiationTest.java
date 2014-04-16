@@ -71,7 +71,7 @@ public class ClientInstantiationTest extends AbstractClientTest {
      * Creates a new instance by assuming the identity of another user.
      */
     @Test
-    public void createNewInstanceUsingImposter() {
+    public void createInstanceByImpersonatingUser() {
         GitLabApiClient oldClient = new GitLabApiClient(
                 "http://gitlab.example.org",
                 "0123456789abcdef",
@@ -79,7 +79,7 @@ public class ClientInstantiationTest extends AbstractClientTest {
                 1234);
 
         // assume the identity of another user
-        GitLabApiClient newClient = oldClient.imposter("9876543210abcdef");
+        GitLabApiClient newClient = oldClient.impersonate("9876543210abcdef");
 
         assertThat("http://gitlab.example.org", is(newClient.getHost()));
         assertThat("9876543210abcdef",          is(newClient.getPrivateToken()));

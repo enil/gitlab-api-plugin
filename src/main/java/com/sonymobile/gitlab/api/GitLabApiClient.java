@@ -263,7 +263,7 @@ public class GitLabApiClient {
      * @param privateToken a private token for the other user
      * @return a new API client
      */
-    public GitLabApiClient imposter(String privateToken) {
+    public GitLabApiClient impersonate(String privateToken) {
         return new GitLabApiClient(host, privateToken, proxyHost, proxyPort);
     }
 
