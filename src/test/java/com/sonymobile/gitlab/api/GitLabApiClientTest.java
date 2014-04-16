@@ -32,6 +32,7 @@ import com.sonymobile.gitlab.GitLabUser;
 import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -59,6 +60,9 @@ public class GitLabApiClientTest {
     private static final int WIREMOCK_PORT = parseInt(System.getProperty("com.sonymobile.gitlab.api.wiremock.port",
             "6789"));
 
+    /** The URL of the server. */
+    private static final String SERVER_URL = "http://localhost:" + WIREMOCK_PORT;
+
     /** The private token. */
     private static final String PRIVATE_TOKEN = "0123456789abcdef";
 
@@ -78,7 +82,7 @@ public class GitLabApiClientTest {
      */
     @Before
     public void setUp() {
-        client = new GitLabApiClient("http://localhost:" + WIREMOCK_PORT, PRIVATE_TOKEN);
+        client = new GitLabApiClient(SERVER_URL, PRIVATE_TOKEN);
     }
 
     /**
@@ -223,5 +227,25 @@ public class GitLabApiClientTest {
 
         // try to get the current user from the API and expect it to throw and exception
         client.getCurrentUser();
+    }
+
+    /**
+     * Tests creating a client by assuming the identity of another user.
+     */
+    @Test
+    public void createNewClientWithImposter() {
+        GitLabApiClient oldClient = new GitLabApiClient(
+                "http://gitlab.example.org",
+                PRIVATE_TOKEN,
+                "http://proxy",
+                1234);
+
+        // assume the identity of another user
+        GitLabApiClient newClient = oldClient.imposter("9876543210abcdef");
+
+        assertThat("http://gitlab.example.org", is(newClient.getHost()));
+        assertThat("9876543210abcdef",          is(newClient.getPrivateToken()));
+        assertThat("http://proxy",              is(newClient.getProxyHost()));
+        assertThat(1234,                        is(newClient.getProxyPort()));
     }
 }

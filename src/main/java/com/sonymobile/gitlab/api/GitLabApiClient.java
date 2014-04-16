@@ -197,6 +197,41 @@ public class GitLabApiClient {
         return new GitLabUser(get("/user", null).getBody().getObject());
     }
 
+    /**
+     * Returns the URL of the host server.
+     *
+     * @return an URL
+     */
+    public String getHost() {
+        return host;
+    }
+
+    /**
+     * Returns the private token.
+     *
+     * @return a private token
+     */
+    public String getPrivateToken() {
+        return privateToken;
+    }
+
+    /**
+     * Returns the URL of the proxy.
+     *
+     * @return a URL
+     */
+    public String getProxyHost() {
+        return proxyHost;
+    }
+
+    /**
+     * Returns the port of the proxy.
+     *
+     * @return a port number
+     */
+    public int getProxyPort() {
+        return proxyPort;
+    }
 
     /**
      * Returns the URL of the API.
@@ -220,6 +255,16 @@ public class GitLabApiClient {
     public static void testConnection(String host, String privateToken, String proxyHost, int proxyPort)
             throws ApiConnectionFailureException, AuthenticationFailedException {
         new GitLabApiClient(host, privateToken, proxyHost, proxyPort).getCurrentUser();
+    }
+
+    /**
+     * Creates a new client assuming the identity of another user.
+     *
+     * @param privateToken a private token for the other user
+     * @return a new API client
+     */
+    public GitLabApiClient imposter(String privateToken) {
+        return new GitLabApiClient(host, privateToken, proxyHost, proxyPort);
     }
 
     /**
