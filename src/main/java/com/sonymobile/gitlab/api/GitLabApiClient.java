@@ -64,10 +64,10 @@ public class GitLabApiClient {
     /** The private token used to authenticate the connection. */
     private final String privateToken;
 
-    /** The used proxy host (or null if proxy is not used) */
+    /** The used proxy host (or null if proxy is not used). */
     private final String proxyHost;
 
-    /** The used proxy port */
+    /** The used proxy port. */
     private final int proxyPort;
 
     /**
@@ -218,7 +218,7 @@ public class GitLabApiClient {
     /**
      * Returns the URL of the proxy.
      *
-     * @return a URL
+     * @return a URL or null if not set
      */
     public String getProxyHost() {
         return proxyHost;
