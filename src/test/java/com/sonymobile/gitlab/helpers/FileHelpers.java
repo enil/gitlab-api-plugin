@@ -42,7 +42,7 @@ import static org.apache.commons.io.FileUtils.readFileToString;
  */
 public class FileHelpers {
     /**
-     * Loads a JSON object from a file in test resource.
+     * Loads a JSON object from a file in the test resources.
      * 
      * The path must be relative to the test/resources/__files directory used by WireMock.
      *
@@ -51,12 +51,26 @@ public class FileHelpers {
      * @throws IOException if the file cannot be loaded
      */
     public static JSONObject loadJsonObjectFromFile(String relativePath) throws IOException {
-        /* fixme: handle NPE gracefully */
+        // fixme: handle NPE gracefully
         return new JSONObject(readFileToString(new File(getAbsoluteResourceFilePath(relativePath))));
     }
 
     /**
-     * Loads a JSON array from a file in test resource.
+     * Loads a JSON object from a JSON array from a file in the test resources.
+     *
+     * The path must be relative to the test/resources/__files directory used by WireMock.
+     *
+     * @param relativePath the path relative to the files directory
+     * @param indexInArray the index in the array
+     * @return a JSON object
+     * @throws IOException if the file cannot be loaded
+     */
+    public static JSONObject loadJsonObjectFromFile(String relativePath, int indexInArray) throws IOException {
+        return loadJsonArrayFromFile(relativePath).getJSONObject(indexInArray);
+    }
+
+    /**
+     * Loads a JSON array from a file in the test resources.
      *
      * The path must be relative to the test/resources/__files directory used by WireMock.
      *
@@ -65,7 +79,7 @@ public class FileHelpers {
      * @throws IOException if the file cannot be loaded
      */
     public static JSONArray loadJsonArrayFromFile(String relativePath) throws IOException {
-        /* fixme: handle NPE gracefully */
+        // fixme: handle NPE gracefully
         return new JSONArray(readFileToString(new File(getAbsoluteResourceFilePath(relativePath))));
     }
 
