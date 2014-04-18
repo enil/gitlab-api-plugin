@@ -33,7 +33,7 @@ import org.json.JSONObject;
  *
  * A member is basically a user but with additional information about the group and the group membership.
  */
-public final class GitLabGroupMemberInfo extends GitLabUserInfo {
+public final class GitLabGroupMemberInfo extends BasicGitLabUserInfo {
     /** The name of the group. */
     private final String groupName;
 

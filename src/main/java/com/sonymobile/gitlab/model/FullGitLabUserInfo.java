@@ -31,12 +31,12 @@ import org.json.JSONObject;
 /**
  * Complete information about a GitLab user.
  *
- * It is preferable to use the abstract class {@link DetailedGitLabUserInfo} since this class doesn't change the
+ * It is preferable to use the abstract class {@link GitLabUserInfo} since this class doesn't change the
  * interface.
  *
  * @author Emil Nilsson
  */
-public class FullGitLabUserInfo extends DetailedGitLabUserInfo {
+public class FullGitLabUserInfo extends GitLabUserInfo {
     /** Whether the user of the session is active. */
     private final boolean isActive;
 

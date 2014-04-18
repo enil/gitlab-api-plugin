@@ -34,7 +34,7 @@ import com.mashape.unirest.request.HttpRequestWithBody;
 import com.mashape.unirest.request.body.MultipartBody;
 import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
-import com.sonymobile.gitlab.model.DetailedGitLabUserInfo;
+import com.sonymobile.gitlab.model.GitLabUserInfo;
 import com.sonymobile.gitlab.model.FullGitLabUserInfo;
 import com.sonymobile.gitlab.model.GitLabGroupInfo;
 import com.sonymobile.gitlab.model.GitLabSessionInfo;
@@ -193,7 +193,7 @@ public class GitLabApiClient {
      * @throws ApiConnectionFailureException if the connection with the API failed
      * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
      */
-    public DetailedGitLabUserInfo getCurrentUser()
+    public GitLabUserInfo getCurrentUser()
             throws ApiConnectionFailureException, AuthenticationFailedException {
         // create a user object with the response
         return new FullGitLabUserInfo(get("/user", null).getBody().getObject());

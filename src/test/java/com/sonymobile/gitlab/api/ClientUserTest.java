@@ -26,7 +26,7 @@
 package com.sonymobile.gitlab.api;
 
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
-import com.sonymobile.gitlab.model.DetailedGitLabUserInfo;
+import com.sonymobile.gitlab.model.GitLabUserInfo;
 import org.junit.Test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -54,7 +54,7 @@ public class ClientUserTest extends AbstractClientTest {
                         .withBodyFile("api/v3/users/withValidPrivateToken.json")));
 
         // get the current user
-        DetailedGitLabUserInfo user = client.getCurrentUser();
+        GitLabUserInfo user = client.getCurrentUser();
 
         // check that the values of the user are correct
         assertThat(2,                   is(user.getId()));

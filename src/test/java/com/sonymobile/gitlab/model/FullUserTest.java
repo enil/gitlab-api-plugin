@@ -51,7 +51,7 @@ import static org.junit.Assert.assertThat;
  */
 public class FullUserTest {
     /** The user. */
-    private DetailedGitLabUserInfo user;
+    private GitLabUserInfo user;
 
     /** A rule for catching expected exceptions. */
     @Rule

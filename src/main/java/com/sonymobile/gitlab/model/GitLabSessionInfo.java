@@ -35,7 +35,7 @@ import org.json.JSONObject;
  *
  * @author Emil Nilsson
  */
-public final class GitLabSessionInfo extends DetailedGitLabUserInfo {
+public final class GitLabSessionInfo extends GitLabUserInfo {
     /** Whether the user of the session is active. */
     private final boolean isActive;
     /** The private token of the user. */
