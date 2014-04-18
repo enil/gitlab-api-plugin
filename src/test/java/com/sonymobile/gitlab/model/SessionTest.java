@@ -38,6 +38,7 @@ import static java.util.Calendar.MILLISECOND;
 import static java.util.Calendar.NOVEMBER;
 import static org.apache.commons.lang.time.DateUtils.UTC_TIME_ZONE;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -103,5 +104,13 @@ public class SessionTest {
     @Test
     public void getPrivateToken() {
         assertThat("0123456789abcdef", is(session.getPrivateToken()));
+    }
+
+    /**
+     * Converts the session info to a String, which should be the username of the user
+     */
+    @Test
+    public void convertToString() {
+        assertThat(session, hasToString("username"));
     }
 }

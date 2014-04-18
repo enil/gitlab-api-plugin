@@ -38,6 +38,7 @@ import static java.util.Calendar.MILLISECOND;
 import static java.util.Calendar.NOVEMBER;
 import static org.apache.commons.lang.time.DateUtils.UTC_TIME_ZONE;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -105,5 +106,13 @@ public class GroupMemberTest {
     @Test
     public void getGroupName() {
         assertThat("groupname", is(groupMember.getGroupName()));
+    }
+
+    /**
+     * Converts the group member info to a String, which should be the username of the user
+     */
+    @Test
+    public void convertToString() {
+        assertThat(groupMember, hasToString("root"));
     }
 }

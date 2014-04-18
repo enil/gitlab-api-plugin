@@ -66,7 +66,7 @@ public abstract class GitLabUserInfo {
     /**
      * Creates a user info object from a JSON object.
      *
-     * @param jsonObject the JSON object
+     * @param jsonObject a JSON object to derive the information from
      */
     public GitLabUserInfo(JSONObject jsonObject) {
         try {
@@ -144,5 +144,10 @@ public abstract class GitLabUserInfo {
      */
     public final boolean isBlocked() {
         return !isActive();
+    }
+
+    @Override
+    public final String toString() {
+        return getUsername();
     }
 }

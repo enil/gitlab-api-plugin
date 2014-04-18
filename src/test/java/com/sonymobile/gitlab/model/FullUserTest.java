@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  */
 
-package com.sonymobile.gitlab;
+package com.sonymobile.gitlab.model;
 
 import org.json.JSONObject;
 import org.junit.Before;
@@ -32,20 +32,26 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import static com.sonymobile.gitlab.helpers.FileHelpers.loadJsonObjectFromFile;
+import static java.util.Calendar.MILLISECOND;
+import static java.util.Calendar.NOVEMBER;
+import static org.apache.commons.lang.time.DateUtils.UTC_TIME_ZONE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests getting attributes from a {@link GitLabUser}.
+ * Tests getting attributes from a {@link com.sonymobile.gitlab.model.GitLabSessionInfo} object.
  *
  * @author Emil Nilsson
  */
-public class UserTest {
-    /** The session object to test against. */
-    private GitLabUser user;
+public class FullUserTest {
+    /** The user. */
+    private DetailedGitLabUserInfo user;
 
     /** A rule for catching expected exceptions. */
     @Rule
@@ -54,11 +60,11 @@ public class UserTest {
     /**
      * Loads the user object from a JSON file.
      *
-     * @throws java.io.IOException if reading of the JSON file failed
+     * @throws IOException if reading of the JSON file failed
      */
     @Before
     public void setUp() throws IOException {
-        user = new GitLabUser(loadJsonObjectFromFile("api/v3/users/withValidPrivateToken.json"));
+        user = new GitLabSessionInfo(loadJsonObjectFromFile("api/v3/users/withValidPrivateToken.json"));
     }
 
     @Test
@@ -82,26 +88,42 @@ public class UserTest {
     }
 
     @Test
-    public void isBlocked() {
-        assertThat(false, is(user.isBlocked()));
+    public void getCreatedAtDate() {
+        // create the date 2010-11-12 13:14:15
+        Calendar calendar = new GregorianCalendar(UTC_TIME_ZONE);
+        calendar.set(2010, NOVEMBER, 12, 13, 14, 15);
+        calendar.clear(MILLISECOND);
+        Date expectedDate = calendar.getTime();
+
+        assertThat(expectedDate, is(user.getCreatedAtDate()));
+    }
+
+    @Test
+    public void isActive() {
+        assertThat(user.isActive(), is(true));
+    }
+
+    @Test
+    public void isAdmin() {
+        assertThat(user.isAdmin(), is(false));
     }
 
     /**
-     * Attempts to create a user with missing keys.
+     * Attempts to create user info with missing keys.
      */
     @Test
     public void createUserWithMissingKeys() throws Exception {
         // constructor should throw an exception
         thrown.expect(IllegalArgumentException.class);
         // use empty JSON object
-        new GitLabUser(new JSONObject());
+        new FullGitLabUserInfo(new JSONObject());
     }
 
     /**
-     * Converts the group to a String, which should be the user name
+     * Converts the user info to a String, which should be the username
      */
     @Test
     public void convertToString() {
-        assertThat(user, hasToString("User Name"));
+        assertThat(user, hasToString("username"));
     }
 }

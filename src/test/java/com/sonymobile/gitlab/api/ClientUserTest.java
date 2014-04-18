@@ -57,7 +57,7 @@ public class ClientUserTest extends AbstractClientTest {
         GitLabUser user = client.getCurrentUser();
 
         // check that the values of the user are correct
-        assertThat(1,                   is(user.getId()));
+        assertThat(2,                   is(user.getId()));
         assertThat("username",          is(user.getUsername()));
         assertThat("user@example.com",  is(user.getEmail()));
         assertThat("User Name",         is(user.getName()));
