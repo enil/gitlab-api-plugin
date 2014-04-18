@@ -23,8 +23,9 @@
  * THE SOFTWARE.
  */
 
-package com.sonymobile.gitlab;
+package com.sonymobile.gitlab.model;
 
+import com.sonymobile.gitlab.model.GitLabGroupInfo;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,13 +40,13 @@ import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests getting attributes from a {@link GitLabGroup}
+ * Tests getting attributes from a {@link GitLabGroupInfo} object.
  *
  * @author Emil Nilsson
  */
 public class GroupTest {
     /** The group object to test against. */
-    private GitLabGroup group;
+    private GitLabGroupInfo group;
 
     /** A rule for catching expected exceptions. */
     @Rule
@@ -58,7 +59,7 @@ public class GroupTest {
      */
     @Before
     public void setUp() throws IOException {
-        group = new GitLabGroup(loadJsonObjectFromFile("api/v3/groups/byGroupId.json"));
+        group = new GitLabGroupInfo(loadJsonObjectFromFile("api/v3/groups/byGroupId.json"));
     }
 
     @Test
@@ -84,7 +85,7 @@ public class GroupTest {
         // constructor should throw an exception
         thrown.expect(IllegalArgumentException.class);
         // use empty JSON object
-        new GitLabGroup(new JSONObject());
+        new GitLabGroupInfo(new JSONObject());
     }
 
     /**

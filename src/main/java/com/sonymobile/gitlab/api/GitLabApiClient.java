@@ -32,8 +32,8 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 import com.mashape.unirest.request.body.MultipartBody;
-import com.sonymobile.gitlab.GitLabGroup;
 import com.sonymobile.gitlab.GitLabSession;
+import com.sonymobile.gitlab.model.GitLabGroupInfo;
 import com.sonymobile.gitlab.GitLabUser;
 import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
@@ -168,15 +168,15 @@ public class GitLabApiClient {
      * @throws ApiConnectionFailureException if the connection with the API failed
      * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
      */
-    public List<GitLabGroup> getGroups()
+    public List<GitLabGroupInfo> getGroups()
             throws ApiConnectionFailureException, AuthenticationFailedException {
         // get the json array with the groups from the response
         JSONArray jsonArray = get("/groups", null).getBody().getArray();
 
         // convert all objects in the json array to groups
-        ArrayList<GitLabGroup> groups = new ArrayList<GitLabGroup>(jsonArray.length());
+        ArrayList<GitLabGroupInfo> groups = new ArrayList<GitLabGroupInfo>(jsonArray.length());
         for (int index = 0; index < jsonArray.length(); index++) {
-            groups.add(new GitLabGroup(jsonArray.getJSONObject(index)));
+            groups.add(new GitLabGroupInfo(jsonArray.getJSONObject(index)));
         }
 
         return groups;

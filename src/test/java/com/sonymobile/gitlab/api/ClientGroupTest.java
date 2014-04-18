@@ -25,7 +25,7 @@
 
 package com.sonymobile.gitlab.api;
 
-import com.sonymobile.gitlab.GitLabGroup;
+import com.sonymobile.gitlab.model.GitLabGroupInfo;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
 import org.junit.Test;
 
@@ -56,12 +56,12 @@ public class ClientGroupTest extends AbstractClientTest {
                         .withStatus(200)
                         .withBodyFile("/api/v3/groups/all.json")));
         // get the groups
-        List<GitLabGroup> groups = client.getGroups();
+        List<GitLabGroupInfo> groups = client.getGroups();
 
         assertThat(groups, hasSize(1));
         // pick out the first (and only) group
 
-        GitLabGroup group = groups.get(0);
+        GitLabGroupInfo group = groups.get(0);
         assertThat(2,               is(group.getId()));
         assertThat("Group Name",    is(group.getName()));
         assertThat("groupname",     is(group.getPath()));

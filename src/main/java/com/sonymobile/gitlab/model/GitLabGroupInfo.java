@@ -23,17 +23,17 @@
  * THE SOFTWARE.
  */
 
-package com.sonymobile.gitlab;
+package com.sonymobile.gitlab.model;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * A GitLab group.
+ * Information about a GitLab group.
  *
  * @author Emil Nilsson
  */
-public class GitLabGroup {
+public class GitLabGroupInfo {
     /** The group ID. */
     private final int id;
 
@@ -44,11 +44,11 @@ public class GitLabGroup {
     private final String path;
 
     /**
-     * Creates a user from a JSON object.
+     * Creates a group info object from a JSON object.
      *
-     * @param jsonObject the JSON object
+     * @param jsonObject a JSON object to derive the information from
      */
-    public GitLabGroup(JSONObject jsonObject) {
+    public GitLabGroupInfo(JSONObject jsonObject) {
         try {
             id = jsonObject.getInt("id");
             name = jsonObject.getString("name");
@@ -60,7 +60,7 @@ public class GitLabGroup {
     }
 
     /**
-     * Returns the group ID.
+     * Gets the group ID.
      *
      * @return a group ID
      */
@@ -69,7 +69,7 @@ public class GitLabGroup {
     }
 
     /**
-     * Returns the full group name.
+     * Gets the full group name.
      *
      * @return a group name
      */
@@ -78,7 +78,7 @@ public class GitLabGroup {
     }
 
     /**
-     * Returns the path of the group.
+     * Gets the path of the group.
      *
      * @return a path
      */
