@@ -29,7 +29,7 @@ package com.sonymobile.gitlab.exceptions;
  *
  * @author Emil Nilsson
  */
-public class ApiConnectionFailureException extends Exception {
+public class ApiConnectionFailureException extends GitLabApiException {
     /**
      * Creates an connection failure exception with a message.
      *
@@ -43,7 +43,7 @@ public class ApiConnectionFailureException extends Exception {
      * Creates an connection failure exception with a message and cause.
      *
      * @param message the reason for the exception
-     * @param cause the exception causing the connection failure exception
+     * @param cause   the exception causing the connection failure exception
      */
     public ApiConnectionFailureException(String message, Throwable cause) {
         super(message, cause);
