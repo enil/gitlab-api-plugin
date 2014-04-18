@@ -64,7 +64,7 @@ public class FullUserTest {
      */
     @Before
     public void setUp() throws IOException {
-        user = new GitLabSessionInfo(loadJsonObjectFromFile("api/v3/users/withValidPrivateToken.json"));
+        user = new FullGitLabUserInfo(loadJsonObjectFromFile("api/v3/users/withValidPrivateToken.json"));
     }
 
     @Test

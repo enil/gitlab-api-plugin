@@ -25,6 +25,7 @@
 
 package com.sonymobile.gitlab.model;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -36,6 +37,9 @@ import org.json.JSONObject;
  * @author Emil Nilsson
  */
 public class FullGitLabUserInfo extends DetailedGitLabUserInfo {
+    /** Whether the user of the session is active. */
+    private final boolean isActive;
+
     /**
      * Creates user information from a JSON object.
      *
@@ -43,8 +47,12 @@ public class FullGitLabUserInfo extends DetailedGitLabUserInfo {
      */
     public FullGitLabUserInfo(JSONObject jsonObject) {
         super(jsonObject);
-        // todo: implement
-        throw new UnsupportedOperationException("Not implemented");
+        try {
+            isActive = jsonObject.getString("state").equals("active");
+        } catch (JSONException e) {
+            // failed to retrieve a value
+            throw new IllegalArgumentException("Malformed JSON object", e);
+        }
     }
 
     /**
@@ -54,7 +62,6 @@ public class FullGitLabUserInfo extends DetailedGitLabUserInfo {
      */
     @Override
     public boolean isActive() {
-        // todo: implement
-        throw new UnsupportedOperationException("Not implemented");
+        return isActive;
     }
 }
