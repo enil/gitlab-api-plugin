@@ -42,11 +42,14 @@ import com.sonymobile.gitlab.model.GitLabUserInfo;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.sonymobile.gitlab.helpers.JSONArrayIterator.iterator;
 
 /**
  * A client for communicating with a GitLab API.
@@ -178,8 +181,8 @@ public class GitLabApiClient {
 
         // convert all objects in the json array to groups
         ArrayList<GitLabGroupInfo> groups = new ArrayList<GitLabGroupInfo>(jsonArray.length());
-        for (int index = 0; index < jsonArray.length(); index++) {
-            groups.add(new GitLabGroupInfo(jsonArray.getJSONObject(index)));
+        for (final JSONObject jsonObject : iterator(jsonArray)) {
+            groups.add(new GitLabGroupInfo(jsonObject));
         }
 
         return groups;
@@ -200,8 +203,8 @@ public class GitLabApiClient {
 
         // convert all objects in the json array to groups
         ArrayList<GitLabGroupMemberInfo> members = new ArrayList<GitLabGroupMemberInfo>(jsonArray.length());
-        for (int index = 0; index < jsonArray.length(); index++) {
-            members.add(new GitLabGroupMemberInfo(jsonArray.getJSONObject(index), groupId));
+        for (final JSONObject jsonObject : iterator(jsonArray)) {
+            members.add(new GitLabGroupMemberInfo(jsonObject, groupId));
         }
 
         return members;
