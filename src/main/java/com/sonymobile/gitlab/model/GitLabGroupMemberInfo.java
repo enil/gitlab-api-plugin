@@ -34,8 +34,8 @@ import org.json.JSONObject;
  * A member is basically a user but with additional information about the group and the group membership.
  */
 public final class GitLabGroupMemberInfo extends BasicGitLabUserInfo {
-    /** The name of the group. */
-    private final String groupName;
+    /** The ID of the group. */
+    private final int groupId;
 
     /** The access level of the group member. */
     private final GitLabAccessLevel accessLevel;
@@ -47,9 +47,9 @@ public final class GitLabGroupMemberInfo extends BasicGitLabUserInfo {
      * Creates group membership information with JSON data.
      *
      * @param jsonObject a JSON object to derive the information from
-     * @param groupName the name of the group
+     * @param groupId the ID of the group
      */
-    public GitLabGroupMemberInfo(JSONObject jsonObject, String groupName) {
+    public GitLabGroupMemberInfo(JSONObject jsonObject, int groupId) {
         super(jsonObject);
         try {
             accessLevel = GitLabAccessLevel.accessLevelForId(jsonObject.getInt("access_level"));
@@ -59,7 +59,7 @@ public final class GitLabGroupMemberInfo extends BasicGitLabUserInfo {
             throw new IllegalArgumentException("Malformed JSON object", e);
         }
 
-        this.groupName = groupName;
+        this.groupId = groupId;
     }
 
     /**
@@ -72,12 +72,12 @@ public final class GitLabGroupMemberInfo extends BasicGitLabUserInfo {
     }
 
     /**
-     * Gets the name of the group
+     * Gets the ID of the group
      *
-     * @return a group name
+     * @return a group ID
      */
-    public String getGroupName() {
-        return groupName;
+    public int getGroupId() {
+        return groupId;
     }
 
     /**

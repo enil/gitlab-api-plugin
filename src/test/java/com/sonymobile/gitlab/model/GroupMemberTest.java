@@ -57,9 +57,8 @@ public class GroupMemberTest {
      */
     @Before
     public void setUp() throws IOException {
-        // load the first member (index 0) of the group
-        groupMember = new GitLabGroupMemberInfo(loadJsonObjectFromFile("api/v3/groups/id/members.json", 0),
-                "groupname");
+        // load the first member (index 0) of the group with group ID 1
+        groupMember = new GitLabGroupMemberInfo(loadJsonObjectFromFile("api/v3/groups/id/members.json", 0), 1);
     }
 
     @Test
@@ -104,8 +103,8 @@ public class GroupMemberTest {
     }
 
     @Test
-    public void getGroupName() {
-        assertThat("groupname", is(groupMember.getGroupName()));
+    public void getGroupId() {
+        assertThat(1, is(groupMember.getGroupId()));
     }
 
     /**
