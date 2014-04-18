@@ -34,10 +34,11 @@ import com.mashape.unirest.request.HttpRequestWithBody;
 import com.mashape.unirest.request.body.MultipartBody;
 import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
-import com.sonymobile.gitlab.model.GitLabUserInfo;
 import com.sonymobile.gitlab.model.FullGitLabUserInfo;
 import com.sonymobile.gitlab.model.GitLabGroupInfo;
+import com.sonymobile.gitlab.model.GitLabGroupMemberInfo;
 import com.sonymobile.gitlab.model.GitLabSessionInfo;
+import com.sonymobile.gitlab.model.GitLabUserInfo;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONArray;
@@ -182,6 +183,28 @@ public class GitLabApiClient {
         }
 
         return groups;
+    }
+
+    /**
+     * Fetches the members of a group.
+     *
+     * @param groupId an ID of a group
+     * @return the members of the group
+     * @throws ApiConnectionFailureException if the connection with the API failed
+     * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
+     */
+    public List<GitLabGroupMemberInfo> getGroupMembers(int groupId)
+            throws ApiConnectionFailureException, AuthenticationFailedException {
+        // get the json array with the group members from the response
+        JSONArray jsonArray = get("/groups/" + groupId + "/members", null).getBody().getArray();
+
+        // convert all objects in the json array to groups
+        ArrayList<GitLabGroupMemberInfo> members = new ArrayList<GitLabGroupMemberInfo>(jsonArray.length());
+        for (int index = 0; index < jsonArray.length(); index++) {
+            members.add(new GitLabGroupMemberInfo(jsonArray.getJSONObject(index), groupId));
+        }
+
+        return members;
     }
 
     /**

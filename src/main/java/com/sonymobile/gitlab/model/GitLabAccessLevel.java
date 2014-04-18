@@ -52,7 +52,7 @@ public enum GitLabAccessLevel {
      * Creates an access level with a name and unique id
      *
      * @param name the name
-     * @param id the unique ID
+     * @param id   the unique ID
      */
     private GitLabAccessLevel(String name, int id) {
         this.name = name;

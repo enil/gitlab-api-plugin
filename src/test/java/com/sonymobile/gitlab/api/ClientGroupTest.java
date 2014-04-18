@@ -25,8 +25,10 @@
 
 package com.sonymobile.gitlab.api;
 
-import com.sonymobile.gitlab.model.GitLabGroupInfo;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
+import com.sonymobile.gitlab.model.GitLabAccessLevel;
+import com.sonymobile.gitlab.model.GitLabGroupInfo;
+import com.sonymobile.gitlab.model.GitLabGroupMemberInfo;
 import org.junit.Test;
 
 import java.util.List;
@@ -46,10 +48,10 @@ import static org.junit.Assert.assertThat;
  */
 public class ClientGroupTest extends AbstractClientTest {
     /**
-     * Gets all groups for the authenticated user with ha valid token.
+     * Gets all groups for the authenticated user.
      */
     @Test
-    public void getGroupsWithValidPrivateToken() throws Exception {
+    public void getAllGroups() throws Exception {
         // stub for expected request to get all groups
         stubFor(get(urlEqualTo("/api/v3/groups?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
@@ -62,16 +64,16 @@ public class ClientGroupTest extends AbstractClientTest {
         // pick out the first (and only) group
 
         GitLabGroupInfo group = groups.get(0);
-        assertThat(2,               is(group.getId()));
-        assertThat("Group Name",    is(group.getName()));
-        assertThat("groupname",     is(group.getPath()));
+        assertThat(2, is(group.getId()));
+        assertThat("Group Name", is(group.getName()));
+        assertThat("groupname", is(group.getPath()));
     }
 
     /**
      * Attempts to get groups for the authenticated user with invalid token.
      */
     @Test
-    public void getGroupsWithInvalidPrivateToken() throws Exception {
+    public void getAllGroupsWithInvalidPrivateToken() throws Exception {
         // stub for expected request to get all groups
         stubFor(get(urlEqualTo("/api/v3/groups?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
@@ -82,5 +84,50 @@ public class ClientGroupTest extends AbstractClientTest {
 
         // try to get the groups from the API and expect it to throw and exception
         client.getGroups();
+    }
+
+    /**
+     * Gets all groups members of a group.
+     */
+    @Test
+    public void getGroupMembers() throws Exception {
+        // stub for expected request to get groups group nenbers
+        stubFor(get(urlEqualTo("/api/v3/groups/1/members?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBodyFile("/api/v3/groups/id/members.json")));
+        // get the group members
+        List<GitLabGroupMemberInfo> members = client.getGroupMembers(1);
+
+        assertThat(members, hasSize(2));
+
+        // get members from the group members list
+        GitLabGroupMemberInfo root = members.get(0);
+        GitLabGroupMemberInfo developer = members.get(1);
+
+        assertThat(1, is(root.getGroupId()));
+        assertThat(GitLabAccessLevel.OWNER, is(root.getAccessLevel()));
+        assertThat(1, is(root.getId()));
+
+        assertThat(1, is(developer.getGroupId()));
+        assertThat(GitLabAccessLevel.DEVELOPER, is(developer.getAccessLevel()));
+        assertThat(2, is(developer.getId()));
+    }
+
+    /**
+     * Attempts to gets all groups members of a group using an invalid token.
+     */
+    @Test
+    public void getGroupMembersWithInvalidPrivateToken() throws Exception {
+        // stub for expected request to get group members
+        stubFor(get(urlEqualTo("/api/v3/groups/1/members?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(401)));
+
+        // authentication should fail
+        thrown.expect(AuthenticationFailedException.class);
+
+        // try to get the groups members from the API and expect it to throw and exception
+        client.getGroupMembers(1);
     }
 }
