@@ -25,8 +25,8 @@
 
 package com.sonymobile.gitlab.api;
 
-import com.sonymobile.gitlab.GitLabSession;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
+import com.sonymobile.gitlab.model.GitLabSessionInfo;
 import org.junit.Test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -57,7 +57,7 @@ public class ClientSessionTest extends AbstractClientTest {
                         .withBodyFile("/api/v3/session/withValidCredentials.json")));
 
         // get a session from the API and make sure it succeeds
-        GitLabSession session = client.getSession("username", "password");
+        GitLabSessionInfo session = client.getSession("username", "password");
 
         // check that the values of the session are correct
         assertThat(2,                   is(session.getId()));

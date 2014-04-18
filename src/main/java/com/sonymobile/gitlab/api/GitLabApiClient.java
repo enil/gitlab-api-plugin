@@ -32,11 +32,12 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 import com.mashape.unirest.request.body.MultipartBody;
-import com.sonymobile.gitlab.GitLabSession;
-import com.sonymobile.gitlab.model.GitLabGroupInfo;
-import com.sonymobile.gitlab.GitLabUser;
 import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
+import com.sonymobile.gitlab.model.DetailedGitLabUserInfo;
+import com.sonymobile.gitlab.model.FullGitLabUserInfo;
+import com.sonymobile.gitlab.model.GitLabGroupInfo;
+import com.sonymobile.gitlab.model.GitLabSessionInfo;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONArray;
@@ -135,7 +136,8 @@ public class GitLabApiClient {
                                               final String proxyHost, final int proxyPort)
             throws ApiConnectionFailureException, AuthenticationFailedException {
         // connect to API and create a session with the user credentials
-        final GitLabSession session = new GitLabApiClient(host, null, proxyHost, proxyPort).getSession(login, password);
+        final GitLabSessionInfo session = new GitLabApiClient(host, null, proxyHost, proxyPort).getSession(login,
+                password);
         // use token from session to create a client
         return new GitLabApiClient(host, session.getPrivateToken(), proxyHost, proxyPort);
     }
@@ -149,14 +151,14 @@ public class GitLabApiClient {
      * @throws ApiConnectionFailureException if the connection with the API failed
      * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
      */
-    public GitLabSession getSession(final String login, final String password)
+    public GitLabSessionInfo getSession(final String login, final String password)
             throws ApiConnectionFailureException, AuthenticationFailedException {
         final Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("login", login);
         fields.put("password", password);
 
         // create a session object with the response
-        return new GitLabSession(post("/session", fields, false).getBody().getObject());
+        return new GitLabSessionInfo(post("/session", fields, false).getBody().getObject());
     }
 
     /**
@@ -191,10 +193,10 @@ public class GitLabApiClient {
      * @throws ApiConnectionFailureException if the connection with the API failed
      * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
      */
-    public GitLabUser getCurrentUser()
+    public DetailedGitLabUserInfo getCurrentUser()
             throws ApiConnectionFailureException, AuthenticationFailedException {
         // create a user object with the response
-        return new GitLabUser(get("/user", null).getBody().getObject());
+        return new FullGitLabUserInfo(get("/user", null).getBody().getObject());
     }
 
     /**
