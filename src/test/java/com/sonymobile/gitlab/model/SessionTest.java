@@ -41,49 +41,42 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests getting attributes from a {@link GitLabGroupMemberInfo} object.
+ * Tests getting attributes from a {@link GitLabSessionInfo} object.
  *
  * @author Emil Nilsson
  */
-public class GroupMemberTest {
-    /** The group member. */
-    private GitLabGroupMemberInfo groupMember;
+public class SessionTest {
+    /** The session. */
+    private GitLabSessionInfo session;
 
     /**
-     * Loads the user object from a JSON file.
+     * Loads the session object from a JSON file.
      *
      * @throws IOException if reading of the JSON file failed
      */
     @Before
     public void setUp() throws IOException {
-        // load the first member (index 0) of the group
-        groupMember = new GitLabGroupMemberInfo(loadJsonObjectFromFile("api/v3/groups/id/members.json", 0),
-                "groupname");
+        session = new GitLabSessionInfo(loadJsonObjectFromFile("api/v3/session/withValidCredentials.json"));
     }
 
     @Test
     public void getId() {
-        assertThat(1, is(groupMember.getId()));
+        assertThat(2, is(session.getId()));
     }
 
     @Test
     public void getUsername() {
-        assertThat("root", is(groupMember.getUsername()));
+        assertThat("username", is(session.getUsername()));
     }
 
     @Test
     public void getEmail() {
-        assertThat("root@example.com", is(groupMember.getEmail()));
+        assertThat("user@example.com", is(session.getEmail()));
     }
 
     @Test
     public void getName() {
-        assertThat("Administrator", is(groupMember.getName()));
-    }
-
-    @Test
-    public void getAccessLevel() {
-        assertThat(GitLabAccessLevel.OWNER, is(groupMember.getAccessLevel()));
+        assertThat("User Name", is(session.getName()));
     }
 
     @Test
@@ -94,16 +87,21 @@ public class GroupMemberTest {
         calendar.clear(MILLISECOND);
         Date expectedDate = calendar.getTime();
 
-        assertThat(expectedDate, is(groupMember.getCreatedAtDate()));
+        assertThat(expectedDate, is(session.getCreatedAtDate()));
     }
 
     @Test
     public void isActive() {
-        assertThat(groupMember.isActive(), is(true));
+        assertThat(session.isActive(), is(true));
     }
 
     @Test
-    public void getGroupName() {
-        assertThat("groupname", is(groupMember.getGroupName()));
+    public void isAdmin() {
+        assertThat(session.isAdmin(), is(false));
+    }
+
+    @Test
+    public void getPrivateToken() {
+        assertThat("0123456789abcdef", is(session.getPrivateToken()));
     }
 }

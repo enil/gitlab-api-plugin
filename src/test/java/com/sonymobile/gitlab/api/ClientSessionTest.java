@@ -60,7 +60,7 @@ public class ClientSessionTest extends AbstractClientTest {
         GitLabSession session = client.getSession("username", "password");
 
         // check that the values of the session are correct
-        assertThat(1,                   is(session.getId()));
+        assertThat(2,                   is(session.getId()));
         assertThat("username",          is(session.getUsername()));
         assertThat("user@example.com",  is(session.getEmail()));
         assertThat("User Name",         is(session.getName()));

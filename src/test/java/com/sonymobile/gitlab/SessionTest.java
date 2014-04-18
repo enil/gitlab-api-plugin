@@ -61,7 +61,7 @@ public class SessionTest {
 
     @Test
     public void getId() {
-        assertThat(1, is(session.getId()));
+        assertThat(2, is(session.getId()));
     }
 
     @Test
