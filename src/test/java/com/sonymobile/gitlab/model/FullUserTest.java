@@ -53,6 +53,12 @@ public class FullUserTest {
     /** A normal user. */
     private GitLabUserInfo normalUser;
 
+    /** A blocked user. */
+    private GitLabUserInfo blockedUser;
+
+    /** An admin user. */
+    private GitLabUserInfo adminUser;
+
     /** A rule for catching expected exceptions. */
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -65,6 +71,8 @@ public class FullUserTest {
     @Before
     public void setUp() throws IOException {
         normalUser = new FullGitLabUserInfo(loadJsonObjectFromFile("api/v3/users/1"));
+        blockedUser = new FullGitLabUserInfo(loadJsonObjectFromFile("api/v3/users/1", "blocked"));
+        adminUser = new FullGitLabUserInfo(loadJsonObjectFromFile("api/v3/users/1", "admin"));
     }
 
     @Test
@@ -101,11 +109,13 @@ public class FullUserTest {
     @Test
     public void isActive() {
         assertThat(normalUser.isActive(), is(true));
+        assertThat(blockedUser.isActive(), is(false));
     }
 
     @Test
     public void isAdmin() {
         assertThat(normalUser.isAdmin(), is(false));
+        assertThat(adminUser.isAdmin(), is(true));
     }
 
     /**

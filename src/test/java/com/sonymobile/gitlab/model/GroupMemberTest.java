@@ -50,6 +50,12 @@ public class GroupMemberTest {
     /** A normal member. */
     private GitLabGroupMemberInfo normalMember;
 
+    /** A blocked member. */
+    private GitLabGroupMemberInfo blockedMember;
+
+    /** An admin member. */
+    private GitLabGroupMemberInfo adminMember;
+
     /**
      * Loads the group member objects from a JSON file.
      *
@@ -59,6 +65,10 @@ public class GroupMemberTest {
     public void setUp() throws IOException {
         // load the normal member of the group with group ID 1
         normalMember = new GitLabGroupMemberInfo(loadJsonObjectFromFile("api/v3/groups/1/members", 0), 1);
+        // load the blocked member of the group with group ID 2
+        blockedMember = new GitLabGroupMemberInfo(loadJsonObjectFromFile("api/v3/groups/1/members", 1), 1);
+        // load the admin member of the group with group ID 2
+        adminMember = new GitLabGroupMemberInfo(loadJsonObjectFromFile("api/v3/groups/1/members", 2), 1);
     }
 
     @Test
@@ -84,6 +94,7 @@ public class GroupMemberTest {
     @Test
     public void getAccessLevel() {
         assertThat(GitLabAccessLevel.DEVELOPER, is(normalMember.getAccessLevel()));
+        assertThat(GitLabAccessLevel.OWNER, is(adminMember.getAccessLevel()));
     }
 
     @Test
@@ -100,6 +111,7 @@ public class GroupMemberTest {
     @Test
     public void isActive() {
         assertThat(normalMember.isActive(), is(true));
+        assertThat(blockedMember.isActive(), is(false));
     }
 
     @Test

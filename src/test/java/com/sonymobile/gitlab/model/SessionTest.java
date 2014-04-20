@@ -49,6 +49,12 @@ import static org.junit.Assert.assertThat;
 public class SessionTest {
     /** A session for a normal user. */
     private GitLabSessionInfo normalSession;
+    
+    /** A session for a blocked user. */
+    private GitLabSessionInfo blockedSession;
+
+    /** A session for an admin user. */
+    private GitLabSessionInfo adminSession;
 
     /**
      * Loads session objects from a JSON files.
@@ -58,6 +64,8 @@ public class SessionTest {
     @Before
     public void setUp() throws IOException {
         normalSession = new GitLabSessionInfo(loadJsonObjectFromFile("api/v3/session"));
+        blockedSession = new GitLabSessionInfo(loadJsonObjectFromFile("api/v3/session", "blocked"));
+        adminSession = new GitLabSessionInfo(loadJsonObjectFromFile("api/v3/session", "admin"));
 
     }
 
@@ -95,11 +103,13 @@ public class SessionTest {
     @Test
     public void isActive() {
         assertThat(normalSession.isActive(), is(true));
+        assertThat(blockedSession.isActive(), is(false));
     }
 
     @Test
     public void isAdmin() {
         assertThat(normalSession.isAdmin(), is(false));
+        assertThat(adminSession.isAdmin(), is(true));
     }
 
     @Test
