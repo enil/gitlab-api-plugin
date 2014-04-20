@@ -50,41 +50,41 @@ import static org.junit.Assert.assertThat;
  * @author Emil Nilsson
  */
 public class FullUserTest {
-    /** The user. */
-    private GitLabUserInfo user;
+    /** A normal user. */
+    private GitLabUserInfo normalUser;
 
     /** A rule for catching expected exceptions. */
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     /**
-     * Loads the user object from a JSON file.
+     * Loads the user objects from a JSON file.
      *
      * @throws IOException if reading of the JSON file failed
      */
     @Before
     public void setUp() throws IOException {
-        user = new FullGitLabUserInfo(loadJsonObjectFromFile("api/v3/users/withValidPrivateToken.json"));
+        normalUser = new FullGitLabUserInfo(loadJsonObjectFromFile("api/v3/users/1"));
     }
 
     @Test
     public void getId() {
-        assertThat(2, is(user.getId()));
+        assertThat(1, is(normalUser.getId()));
     }
 
     @Test
     public void getUsername() {
-        assertThat("username", is(user.getUsername()));
+        assertThat("username", is(normalUser.getUsername()));
     }
 
     @Test
     public void getEmail() {
-        assertThat("user@example.com", is(user.getEmail()));
+        assertThat("user@example.com", is(normalUser.getEmail()));
     }
 
     @Test
     public void getName() {
-        assertThat("User Name", is(user.getName()));
+        assertThat("User Name", is(normalUser.getName()));
     }
 
     @Test
@@ -95,17 +95,17 @@ public class FullUserTest {
         calendar.clear(MILLISECOND);
         Date expectedDate = calendar.getTime();
 
-        assertThat(expectedDate, is(user.getCreatedAtDate()));
+        assertThat(expectedDate, is(normalUser.getCreatedAtDate()));
     }
 
     @Test
     public void isActive() {
-        assertThat(user.isActive(), is(true));
+        assertThat(normalUser.isActive(), is(true));
     }
 
     @Test
     public void isAdmin() {
-        assertThat(user.isAdmin(), is(false));
+        assertThat(normalUser.isAdmin(), is(false));
     }
 
     /**
@@ -124,6 +124,6 @@ public class FullUserTest {
      */
     @Test
     public void convertToString() {
-        assertThat(user, hasToString("username"));
+        assertThat(normalUser, hasToString("username"));
     }
 }

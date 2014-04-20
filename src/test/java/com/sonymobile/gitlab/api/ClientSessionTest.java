@@ -54,13 +54,13 @@ public class ClientSessionTest extends AbstractClientTest {
                 .withRequestBody(containing("password=password"))
                 .willReturn(aResponse()
                         .withStatus(201)
-                        .withBodyFile("/api/v3/session/withValidCredentials.json")));
+                        .withBodyFile("/api/v3/session.json")));
 
         // get a session from the API and make sure it succeeds
         GitLabSessionInfo session = client.getSession("username", "password");
 
         // check that the values of the session are correct
-        assertThat(2,                   is(session.getId()));
+        assertThat(1,                   is(session.getId()));
         assertThat("username",          is(session.getUsername()));
         assertThat("user@example.com",  is(session.getEmail()));
         assertThat("User Name",         is(session.getName()));

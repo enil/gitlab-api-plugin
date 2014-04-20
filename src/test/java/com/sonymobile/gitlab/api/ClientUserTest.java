@@ -51,13 +51,13 @@ public class ClientUserTest extends AbstractClientTest {
         stubFor(get(urlEqualTo("/api/v3/user?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withBodyFile("api/v3/users/withValidPrivateToken.json")));
+                        .withBodyFile("api/v3/user.json")));
 
         // get the current user
         GitLabUserInfo user = client.getCurrentUser();
 
         // check that the values of the user are correct
-        assertThat(2,                   is(user.getId()));
+        assertThat(1,                   is(user.getId()));
         assertThat("username",          is(user.getUsername()));
         assertThat("user@example.com",  is(user.getEmail()));
         assertThat("User Name",         is(user.getName()));

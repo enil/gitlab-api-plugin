@@ -47,43 +47,43 @@ import static org.junit.Assert.assertThat;
  * @author Emil Nilsson
  */
 public class GroupMemberTest {
-    /** The group member. */
-    private GitLabGroupMemberInfo groupMember;
+    /** A normal member. */
+    private GitLabGroupMemberInfo normalMember;
 
     /**
-     * Loads the user object from a JSON file.
+     * Loads the group member objects from a JSON file.
      *
      * @throws IOException if reading of the JSON file failed
      */
     @Before
     public void setUp() throws IOException {
-        // load the first member (index 0) of the group with group ID 1
-        groupMember = new GitLabGroupMemberInfo(loadJsonObjectFromFile("api/v3/groups/id/members.json", 0), 1);
+        // load the normal member of the group with group ID 1
+        normalMember = new GitLabGroupMemberInfo(loadJsonObjectFromFile("api/v3/groups/1/members", 0), 1);
     }
 
     @Test
     public void getId() {
-        assertThat(1, is(groupMember.getId()));
+        assertThat(1, is(normalMember.getId()));
     }
 
     @Test
     public void getUsername() {
-        assertThat("root", is(groupMember.getUsername()));
+        assertThat("username", is(normalMember.getUsername()));
     }
 
     @Test
     public void getEmail() {
-        assertThat("root@example.com", is(groupMember.getEmail()));
+        assertThat("user@example.com", is(normalMember.getEmail()));
     }
 
     @Test
     public void getName() {
-        assertThat("Administrator", is(groupMember.getName()));
+        assertThat("User Name", is(normalMember.getName()));
     }
 
     @Test
     public void getAccessLevel() {
-        assertThat(GitLabAccessLevel.OWNER, is(groupMember.getAccessLevel()));
+        assertThat(GitLabAccessLevel.DEVELOPER, is(normalMember.getAccessLevel()));
     }
 
     @Test
@@ -94,17 +94,17 @@ public class GroupMemberTest {
         calendar.clear(MILLISECOND);
         Date expectedDate = calendar.getTime();
 
-        assertThat(expectedDate, is(groupMember.getCreatedAtDate()));
+        assertThat(expectedDate, is(normalMember.getCreatedAtDate()));
     }
 
     @Test
     public void isActive() {
-        assertThat(groupMember.isActive(), is(true));
+        assertThat(normalMember.isActive(), is(true));
     }
 
     @Test
     public void getGroupId() {
-        assertThat(1, is(groupMember.getGroupId()));
+        assertThat(1, is(normalMember.getGroupId()));
     }
 
     /**
@@ -112,6 +112,6 @@ public class GroupMemberTest {
      */
     @Test
     public void convertToString() {
-        assertThat(groupMember, hasToString("root"));
+        assertThat(normalMember, hasToString("username"));
     }
 }

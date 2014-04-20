@@ -47,37 +47,38 @@ import static org.junit.Assert.assertThat;
  * @author Emil Nilsson
  */
 public class SessionTest {
-    /** The session. */
-    private GitLabSessionInfo session;
+    /** A session for a normal user. */
+    private GitLabSessionInfo normalSession;
 
     /**
-     * Loads the session object from a JSON file.
+     * Loads session objects from a JSON files.
      *
-     * @throws IOException if reading of the JSON file failed
+     * @throws IOException if reading of a JSON file failed
      */
     @Before
     public void setUp() throws IOException {
-        session = new GitLabSessionInfo(loadJsonObjectFromFile("api/v3/session/withValidCredentials.json"));
+        normalSession = new GitLabSessionInfo(loadJsonObjectFromFile("api/v3/session"));
+
     }
 
     @Test
     public void getId() {
-        assertThat(2, is(session.getId()));
+        assertThat(1, is(normalSession.getId()));
     }
 
     @Test
     public void getUsername() {
-        assertThat("username", is(session.getUsername()));
+        assertThat("username", is(normalSession.getUsername()));
     }
 
     @Test
     public void getEmail() {
-        assertThat("user@example.com", is(session.getEmail()));
+        assertThat("user@example.com", is(normalSession.getEmail()));
     }
 
     @Test
     public void getName() {
-        assertThat("User Name", is(session.getName()));
+        assertThat("User Name", is(normalSession.getName()));
     }
 
     @Test
@@ -88,22 +89,22 @@ public class SessionTest {
         calendar.clear(MILLISECOND);
         Date expectedDate = calendar.getTime();
 
-        assertThat(expectedDate, is(session.getCreatedAtDate()));
+        assertThat(expectedDate, is(normalSession.getCreatedAtDate()));
     }
 
     @Test
     public void isActive() {
-        assertThat(session.isActive(), is(true));
+        assertThat(normalSession.isActive(), is(true));
     }
 
     @Test
     public void isAdmin() {
-        assertThat(session.isAdmin(), is(false));
+        assertThat(normalSession.isAdmin(), is(false));
     }
 
     @Test
     public void getPrivateToken() {
-        assertThat("0123456789abcdef", is(session.getPrivateToken()));
+        assertThat("0123456789abcdef", is(normalSession.getPrivateToken()));
     }
 
     /**
@@ -111,6 +112,6 @@ public class SessionTest {
      */
     @Test
     public void convertToString() {
-        assertThat(session, hasToString("username"));
+        assertThat(normalSession, hasToString("username"));
     }
 }

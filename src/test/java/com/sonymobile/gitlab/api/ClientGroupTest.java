@@ -56,7 +56,7 @@ public class ClientGroupTest extends AbstractClientTest {
         stubFor(get(urlEqualTo("/api/v3/groups?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withBodyFile("/api/v3/groups/all.json")));
+                        .withBodyFile("/api/v3/groups.json")));
         // get the groups
         List<GitLabGroupInfo> groups = client.getGroups();
 
@@ -95,23 +95,29 @@ public class ClientGroupTest extends AbstractClientTest {
         stubFor(get(urlEqualTo("/api/v3/groups/1/members?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withBodyFile("/api/v3/groups/id/members.json")));
+                        .withBodyFile("/api/v3/groups/1/members.json")));
         // get the group members
         List<GitLabGroupMemberInfo> members = client.getGroupMembers(1);
 
-        assertThat(members, hasSize(2));
+        assertThat(members, hasSize(3));
 
         // get members from the group members list
-        GitLabGroupMemberInfo root = members.get(0);
-        GitLabGroupMemberInfo developer = members.get(1);
+        GitLabGroupMemberInfo normalMember = members.get(0);
+        GitLabGroupMemberInfo blockedMember = members.get(1);
+        GitLabGroupMemberInfo adminMember = members.get(2);
 
-        assertThat(1, is(root.getGroupId()));
-        assertThat(GitLabAccessLevel.OWNER, is(root.getAccessLevel()));
-        assertThat(1, is(root.getId()));
+        assertThat(1, is(normalMember.getGroupId()));
+        assertThat(GitLabAccessLevel.DEVELOPER, is(normalMember.getAccessLevel()));
+        assertThat(1, is(normalMember.getId()));
+        assertThat(normalMember.isBlocked(), is(false));
 
-        assertThat(1, is(developer.getGroupId()));
-        assertThat(GitLabAccessLevel.DEVELOPER, is(developer.getAccessLevel()));
-        assertThat(2, is(developer.getId()));
+        assertThat(blockedMember.isBlocked(), is(true));
+
+        assertThat(1, is(adminMember.getGroupId()));
+        assertThat(GitLabAccessLevel.OWNER, is(adminMember.getAccessLevel()));
+        assertThat(3, is(adminMember.getId()));
+        assertThat(adminMember.isBlocked(), is(false));
+
     }
 
     /**

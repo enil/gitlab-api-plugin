@@ -59,7 +59,7 @@ public class GroupTest {
      */
     @Before
     public void setUp() throws IOException {
-        group = new GitLabGroupInfo(loadJsonObjectFromFile("api/v3/groups/byGroupId.json"));
+        group = new GitLabGroupInfo(loadJsonObjectFromFile("api/v3/groups/1"));
     }
 
     @Test
