@@ -40,20 +40,16 @@ public final class GitLabGroupMemberInfo extends BasicGitLabUserInfo {
     /** The access level of the group member. */
     private final GitLabAccessLevel accessLevel;
 
-    /** Whether the group member is active. */
-    private final boolean isActive;
-
     /**
      * Creates group membership information with JSON data.
      *
      * @param jsonObject a JSON object to derive the information from
-     * @param groupId the ID of the group
+     * @param groupId    the ID of the group
      */
     public GitLabGroupMemberInfo(JSONObject jsonObject, int groupId) {
         super(jsonObject);
         try {
             accessLevel = GitLabAccessLevel.accessLevelForId(jsonObject.getInt("access_level"));
-            isActive = jsonObject.getString("state").equals("active");
         } catch (JSONException e) {
             // failed to retrieve a value
             throw new IllegalArgumentException("Malformed JSON object", e);
@@ -78,15 +74,5 @@ public final class GitLabGroupMemberInfo extends BasicGitLabUserInfo {
      */
     public int getGroupId() {
         return groupId;
-    }
-
-    /**
-     * Checks whether the user account is active
-     *
-     * @return true if active
-     */
-    @Override
-    public boolean isActive() {
-        return isActive;
     }
 }

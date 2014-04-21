@@ -48,9 +48,9 @@ public class ClientInstantiationTest extends AbstractClientTest {
                 1234);
 
         assertThat("http://gitlab.example.org", is(newClient.getHost()));
-        assertThat("0123456789abcdef",          is(newClient.getPrivateToken()));
-        assertThat("http://proxy",              is(newClient.getProxyHost()));
-        assertThat(1234,                        is(newClient.getProxyPort()));
+        assertThat("0123456789abcdef", is(newClient.getPrivateToken()));
+        assertThat("http://proxy", is(newClient.getProxyHost()));
+        assertThat(1234, is(newClient.getProxyPort()));
     }
 
     /**
@@ -63,8 +63,8 @@ public class ClientInstantiationTest extends AbstractClientTest {
                 "0123456789abcdef");
 
         assertThat("http://gitlab.example.org", is(newClient.getHost()));
-        assertThat("0123456789abcdef",          is(newClient.getPrivateToken()));
-        assertThat(null,                        is(newClient.getProxyHost()));
+        assertThat("0123456789abcdef", is(newClient.getPrivateToken()));
+        assertThat(null, is(newClient.getProxyHost()));
     }
 
     /**
@@ -82,8 +82,8 @@ public class ClientInstantiationTest extends AbstractClientTest {
         GitLabApiClient newClient = oldClient.impersonate("9876543210abcdef");
 
         assertThat("http://gitlab.example.org", is(newClient.getHost()));
-        assertThat("9876543210abcdef",          is(newClient.getPrivateToken()));
-        assertThat("http://proxy",              is(newClient.getProxyHost()));
-        assertThat(1234,                        is(newClient.getProxyPort()));
+        assertThat("9876543210abcdef", is(newClient.getPrivateToken()));
+        assertThat("http://proxy", is(newClient.getProxyHost()));
+        assertThat(1234, is(newClient.getProxyPort()));
     }
 }

@@ -47,11 +47,10 @@ public class FileHelpers {
     /**
      * Loads a JSON object from a file in the test resources.
      *
-     * @see #getAbsoluteResourceFilePath(String, String)
-     *
      * @param relativePath a path relative to the files directory
      * @return a JSON object
      * @throws IOException if the file cannot be loaded
+     * @see #getAbsoluteResourceFilePath(String, String)
      */
     public static JSONObject loadJsonObjectFromFile(String relativePath)
             throws IOException {
@@ -61,12 +60,11 @@ public class FileHelpers {
     /**
      * Loads a JSON object from a file in the test resources.
      *
-     * @see #getAbsoluteResourceFilePath(String, String)
-     *
      * @param relativePath a path relative to the files directory
-     * @param variant the name of the variant suffix or null
+     * @param variant      the name of the variant suffix or null
      * @return a JSON object
      * @throws IOException if the file cannot be loaded
+     * @see #getAbsoluteResourceFilePath(String, String)
      */
     public static JSONObject loadJsonObjectFromFile(String relativePath, String variant)
             throws IOException {
@@ -76,12 +74,11 @@ public class FileHelpers {
     /**
      * Loads a JSON object from a JSON array from a file in the test resources.
      *
-     * @see #getAbsoluteResourceFilePath(String, String)
-     *
      * @param relativePath the path relative to the files directory
      * @param indexInArray the index in the array
      * @return a JSON object
      * @throws IOException if the file cannot be loaded
+     * @see #getAbsoluteResourceFilePath(String, String)
      */
     public static JSONObject loadJsonObjectFromFile(String relativePath, int indexInArray)
             throws IOException {
@@ -91,12 +88,11 @@ public class FileHelpers {
     /**
      * Loads a JSON object from a JSON array from a file in the test resources.
      *
-     * @see #getAbsoluteResourceFilePath(String, String)
-     *
      * @param relativePath the path relative to the files directory
      * @param indexInArray the index in the array
      * @return a JSON object
      * @throws IOException if the file cannot be loaded
+     * @see #getAbsoluteResourceFilePath(String, String)
      */
     public static JSONObject loadJsonObjectFromFile(String relativePath, int indexInArray, String variant)
             throws IOException {
@@ -106,11 +102,10 @@ public class FileHelpers {
     /**
      * Loads a JSON array from a file in the test resources.
      *
-     * @see #getAbsoluteResourceFilePath(String, String)
-     *
      * @param relativePath a path relative to the files directory
      * @return a JSON array
      * @throws IOException if the file cannot be loaded
+     * @see #getAbsoluteResourceFilePath(String, String)
      */
     public static JSONArray loadJsonArrayFromFile(String relativePath)
             throws IOException {
@@ -120,12 +115,11 @@ public class FileHelpers {
     /**
      * Loads a JSON array from a file in the test resources.
      *
-     * @see #getAbsoluteResourceFilePath(String, String)
-     *
      * @param relativePath a path relative to the files directory
-     * @param variant the name of the variant suffix or null
+     * @param variant      the name of the variant suffix or null
      * @return a JSON array
      * @throws IOException if the file cannot be loaded
+     * @see #getAbsoluteResourceFilePath(String, String)
      */
     public static JSONArray loadJsonArrayFromFile(String relativePath, String variant)
             throws IOException {
@@ -139,7 +133,7 @@ public class FileHelpers {
      * The path file must be relative to the src/test/resources/__files directory used by WireMock.
      *
      * @param relativePath the path relative to the files directory
-     * @param variant the name of the variant suffix or null
+     * @param variant      the name of the variant suffix or null
      * @return the absolute file path
      * @throws IOException if the file cannot be loaded
      */

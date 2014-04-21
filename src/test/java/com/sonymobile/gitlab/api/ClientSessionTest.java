@@ -60,12 +60,31 @@ public class ClientSessionTest extends AbstractClientTest {
         GitLabSessionInfo session = client.getSession("username", "password");
 
         // check that the values of the session are correct
-        assertThat(1,                   is(session.getId()));
-        assertThat("username",          is(session.getUsername()));
-        assertThat("user@example.com",  is(session.getEmail()));
-        assertThat("User Name",         is(session.getName()));
-        assertThat(PRIVATE_TOKEN,       is(session.getPrivateToken()));
-        assertThat(false,               is(session.isBlocked()));
+        assertThat(1, is(session.getId()));
+        assertThat("username", is(session.getUsername()));
+        assertThat("user@example.com", is(session.getEmail()));
+        assertThat("User Name", is(session.getName()));
+        assertThat(PRIVATE_TOKEN, is(session.getPrivateToken()));
+        assertThat(false, is(session.isBlocked()));
+    }
+
+    /**
+     * Gets a session for a blocked user.
+     */
+    @Test
+    public void openSessionForBlockedUser() throws Exception {
+        // stub for expected request to get a session
+        stubFor(post(urlEqualTo("/api/v3/session"))
+                .withRequestBody(containing("login=username"))
+                .withRequestBody(containing("password=password"))
+                .willReturn(aResponse()
+                        .withStatus(201)
+                        .withBodyFile("/api/v3/session_blocked.json")));
+
+        // get a session from the API and make sure it succeeds
+        GitLabSessionInfo session = client.getSession("username", "password");
+
+        assertThat(true, is(session.isBlocked()));
     }
 
     /**

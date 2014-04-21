@@ -43,6 +43,7 @@ import static org.apache.commons.lang.time.DateUtils.UTC_TIME_ZONE;
 public abstract class BasicGitLabUserInfo {
     /** A date formatter for parsing the date of creation. */
     private static final DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
     static {
         // interpret all dates as UTC dates
         DATE_FORMATTER.setTimeZone(UTC_TIME_ZONE);
@@ -60,6 +61,10 @@ public abstract class BasicGitLabUserInfo {
     /** The name. */
     private final String name;
 
+
+    /** Whether the user account is active. */
+    private final boolean isActive;
+
     /** The date of creation. */
     private final Date createdAt;
 
@@ -74,6 +79,7 @@ public abstract class BasicGitLabUserInfo {
             username = jsonObject.getString("username");
             email = jsonObject.getString("email");
             name = jsonObject.getString("name");
+            isActive = jsonObject.getString("state").equals("active");
             createdAt = DATE_FORMATTER.parse(jsonObject.getString("created_at"));
         } catch (JSONException e) {
             // failed to retrieve a value
@@ -83,7 +89,6 @@ public abstract class BasicGitLabUserInfo {
             throw new IllegalArgumentException("Malformed date");
         }
     }
-
 
     /**
      * Gets the user ID.
@@ -135,7 +140,9 @@ public abstract class BasicGitLabUserInfo {
      *
      * @return true if active
      */
-    public abstract boolean isActive();
+    public final boolean isActive() {
+        return isActive;
+    }
 
     /**
      * Checks whether the user is blocked.

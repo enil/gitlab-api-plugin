@@ -36,8 +36,6 @@ import org.json.JSONObject;
  * @author Emil Nilsson
  */
 public final class GitLabSessionInfo extends GitLabUserInfo {
-    /** Whether the user of the session is active. */
-    private final boolean isActive;
     /** The private token of the user. */
     private final String privateToken;
 
@@ -49,23 +47,11 @@ public final class GitLabSessionInfo extends GitLabUserInfo {
     public GitLabSessionInfo(JSONObject jsonObject) {
         super(jsonObject);
         try {
-            // active if blocked key isn't present
-            isActive = jsonObject.has("blocked") ? !jsonObject.getBoolean("blocked") : true;
             privateToken = jsonObject.getString("private_token");
         } catch (JSONException e) {
             // failed to retrieve a value
             throw new IllegalArgumentException("Malformed JSON object", e);
         }
-    }
-
-    /**
-     * Checks whether the user account is active.
-     *
-     * @return true if active
-     */
-    @Override
-    public boolean isActive() {
-        return isActive;
     }
 
     /**
