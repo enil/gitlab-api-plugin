@@ -25,15 +25,15 @@
 
 package com.sonymobile.gitlab.model;
 
+import com.sonymobile.gitlab.helpers.JsonFileLoader;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import static com.sonymobile.gitlab.helpers.FileHelpers.loadJsonObjectFromFile;
+import static com.sonymobile.gitlab.helpers.JsonFileLoader.jsonFile;
 import static java.util.Calendar.MILLISECOND;
 import static java.util.Calendar.NOVEMBER;
 import static org.apache.commons.lang.time.DateUtils.UTC_TIME_ZONE;
@@ -58,15 +58,15 @@ public class SessionTest {
 
     /**
      * Loads session objects from a JSON files.
-     *
-     * @throws IOException if reading of a JSON file failed
      */
     @Before
-    public void setUp() throws IOException {
-        normalSession = new GitLabSessionInfo(loadJsonObjectFromFile("api/v3/session"));
-        blockedSession = new GitLabSessionInfo(loadJsonObjectFromFile("api/v3/session", "blocked"));
-        adminSession = new GitLabSessionInfo(loadJsonObjectFromFile("api/v3/session", "admin"));
+    public void setUp() throws Exception {
+        JsonFileLoader.ObjectLoader<GitLabSessionInfo> sessionFile = jsonFile("api/v3/session")
+                .withType(GitLabSessionInfo.class);
 
+        normalSession = sessionFile.loadAsObject();
+        blockedSession = sessionFile.withVariant("blocked").loadAsObject();
+        adminSession = sessionFile.withVariant("admin").loadAsObject();
     }
 
     @Test

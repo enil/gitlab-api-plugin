@@ -25,15 +25,15 @@
 
 package com.sonymobile.gitlab.model;
 
+import com.sonymobile.gitlab.helpers.JsonFileLoader;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import static com.sonymobile.gitlab.helpers.FileHelpers.loadJsonObjectFromFile;
+import static com.sonymobile.gitlab.helpers.JsonFileLoader.jsonFile;
 import static java.util.Calendar.MILLISECOND;
 import static java.util.Calendar.NOVEMBER;
 import static org.apache.commons.lang.time.DateUtils.UTC_TIME_ZONE;
@@ -58,17 +58,16 @@ public class GroupMemberTest {
 
     /**
      * Loads the group member objects from a JSON file.
-     *
-     * @throws IOException if reading of the JSON file failed
      */
     @Before
-    public void setUp() throws IOException {
-        // load the normal member of the group with group ID 1
-        normalMember = new GitLabGroupMemberInfo(loadJsonObjectFromFile("api/v3/groups/1/members", 0), 1);
-        // load the blocked member of the group with group ID 2
-        blockedMember = new GitLabGroupMemberInfo(loadJsonObjectFromFile("api/v3/groups/1/members", 1), 1);
-        // load the admin member of the group with group ID 2
-        adminMember = new GitLabGroupMemberInfo(loadJsonObjectFromFile("api/v3/groups/1/members", 2), 1);
+    public void setUp() throws Exception {
+        JsonFileLoader.ObjectLoader<GitLabGroupMemberInfo> membersFile = jsonFile("api/v3/groups/1/members")
+                .withType(GitLabGroupMemberInfo.class)
+                .andParameters(1); // group ID is 1
+
+        normalMember = membersFile.fromIndex(0).loadAsObject();
+        blockedMember = membersFile.fromIndex(1).loadAsObject();
+        adminMember = membersFile.fromIndex(2).loadAsObject();
     }
 
     @Test

@@ -25,16 +25,13 @@
 
 package com.sonymobile.gitlab.model;
 
-import com.sonymobile.gitlab.model.GitLabGroupInfo;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.io.IOException;
-
-import static com.sonymobile.gitlab.helpers.FileHelpers.loadJsonObjectFromFile;
+import static com.sonymobile.gitlab.helpers.JsonFileLoader.jsonFile;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.assertThat;
@@ -54,12 +51,12 @@ public class GroupTest {
 
     /**
      * Loads the group object from a JSON file.
-     *
-     * @throws java.io.IOException if reading of the JSON file failed
      */
     @Before
-    public void setUp() throws IOException {
-        group = new GitLabGroupInfo(loadJsonObjectFromFile("api/v3/groups/1"));
+    public void setUp() throws Exception {
+        group = jsonFile("api/v3/groups/1")
+                .withType(GitLabGroupInfo.class)
+                .loadAsObject();
     }
 
     @Test

@@ -31,12 +31,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import static com.sonymobile.gitlab.helpers.FileHelpers.loadJsonObjectFromFile;
+import static com.sonymobile.gitlab.helpers.JsonFileLoader.jsonFile;
 import static java.util.Calendar.MILLISECOND;
 import static java.util.Calendar.NOVEMBER;
 import static org.apache.commons.lang.time.DateUtils.UTC_TIME_ZONE;
@@ -50,6 +49,10 @@ import static org.junit.Assert.assertThat;
  * @author Emil Nilsson
  */
 public class FullUserTest {
+    /** A rule for catching expected exceptions. */
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
     /** A normal user. */
     private GitLabUserInfo normalUser;
 
@@ -59,20 +62,24 @@ public class FullUserTest {
     /** An admin user. */
     private GitLabUserInfo adminUser;
 
-    /** A rule for catching expected exceptions. */
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     /**
      * Loads the user objects from a JSON file.
-     *
-     * @throws IOException if reading of the JSON file failed
      */
     @Before
-    public void setUp() throws IOException {
-        normalUser = new FullGitLabUserInfo(loadJsonObjectFromFile("api/v3/users/1"));
-        blockedUser = new FullGitLabUserInfo(loadJsonObjectFromFile("api/v3/users/1", "blocked"));
-        adminUser = new FullGitLabUserInfo(loadJsonObjectFromFile("api/v3/users/1", "admin"));
+    public void setUp() throws Exception {
+        normalUser = jsonFile("api/v3/users/1")
+                .withType(FullGitLabUserInfo.class)
+                .loadAsObject();
+
+        blockedUser = jsonFile("api/v3/users/1")
+                .withType(FullGitLabUserInfo.class)
+                .withVariant("blocked")
+                .loadAsObject();
+
+        adminUser = jsonFile("api/v3/users/1")
+                .withType(FullGitLabUserInfo.class)
+                .withVariant("admin")
+                .loadAsObject();
     }
 
     @Test
