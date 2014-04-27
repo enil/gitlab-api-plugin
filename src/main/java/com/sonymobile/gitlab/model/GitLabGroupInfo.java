@@ -64,7 +64,7 @@ public class GitLabGroupInfo {
      *
      * @return a group ID
      */
-    public int getId() {// todo: implement
+    public int getId() {
         return id;
     }
 

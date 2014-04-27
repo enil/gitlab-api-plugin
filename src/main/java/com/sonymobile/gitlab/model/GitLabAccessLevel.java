@@ -32,7 +32,7 @@ package com.sonymobile.gitlab.model;
  */
 public enum GitLabAccessLevel {
     /** Not a member in a group. */
-    NONE       ("None",       0),
+    NONE       ("None",         0),
     /** A guest in a group. */
     GUEST       ("Guest",       10),
     /** A reporter in a group. */

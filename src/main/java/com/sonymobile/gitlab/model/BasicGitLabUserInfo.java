@@ -32,8 +32,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import static org.apache.commons.lang.time.DateUtils.UTC_TIME_ZONE;
+import java.util.TimeZone;
 
 /**
  * The most basic information about a GitLab user.
@@ -46,7 +45,7 @@ public abstract class BasicGitLabUserInfo {
 
     static {
         // interpret all dates as UTC dates
-        DATE_FORMATTER.setTimeZone(UTC_TIME_ZONE);
+        DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     /** The user ID. */
