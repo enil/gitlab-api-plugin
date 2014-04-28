@@ -34,6 +34,8 @@ import com.mashape.unirest.request.HttpRequestWithBody;
 import com.mashape.unirest.request.body.MultipartBody;
 import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
+import com.sonymobile.gitlab.exceptions.GitLabApiException;
+import com.sonymobile.gitlab.exceptions.NotFoundException;
 import com.sonymobile.gitlab.model.FullGitLabUserInfo;
 import com.sonymobile.gitlab.model.GitLabGroupInfo;
 import com.sonymobile.gitlab.model.GitLabGroupMemberInfo;
@@ -62,6 +64,9 @@ public class GitLabApiClient {
 
     /** HTTP status code 201 Created. */
     private static final int HTTP_201_CREATED = 201;
+
+    /** HTTP status code 404 Not Found. */
+    private static final int HTTP_404_NOT_FOUND = 404;
 
     /** The URL of the host server excluding the path. */
     private final String host;
@@ -113,11 +118,10 @@ public class GitLabApiClient {
      * @param login    the username of the user
      * @param password the password of the user
      * @return a GitLab API client
-     * @throws ApiConnectionFailureException if the connection with the API failed
-     * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
+     * @throws GitLabApiException if the request failed
      */
     public static GitLabApiClient openSession(final String host, final String login, final String password)
-            throws ApiConnectionFailureException, AuthenticationFailedException {
+            throws GitLabApiException {
         // open session without setting a proxy
         return openSession(host, login, password, null, 0);
     }
@@ -133,12 +137,11 @@ public class GitLabApiClient {
      * @param proxyHost the used proxy host
      * @param proxyPort the used proxy port
      * @return a GitLab API client
-     * @throws ApiConnectionFailureException if the connection with the API failed
-     * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
+     * @throws GitLabApiException if the request failed
      */
     public static GitLabApiClient openSession(final String host, final String login, final String password,
                                               final String proxyHost, final int proxyPort)
-            throws ApiConnectionFailureException, AuthenticationFailedException {
+            throws GitLabApiException {
         // connect to API and create a session with the user credentials
         final GitLabSessionInfo session = new GitLabApiClient(host, null, proxyHost, proxyPort).getSession(login,
                 password);
@@ -152,11 +155,10 @@ public class GitLabApiClient {
      * @param login    the username of the user
      * @param password the password of the user
      * @return a session object
-     * @throws ApiConnectionFailureException if the connection with the API failed
-     * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
+     * @throws GitLabApiException if the request failed
      */
     public GitLabSessionInfo getSession(final String login, final String password)
-            throws ApiConnectionFailureException, AuthenticationFailedException {
+            throws GitLabApiException {
         final Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("login", login);
         fields.put("password", password);
@@ -171,11 +173,10 @@ public class GitLabApiClient {
      * Admin users can see all groups, others can only see groups they are members of.
      *
      * @return a list of groups
-     * @throws ApiConnectionFailureException if the connection with the API failed
-     * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
+     * @throws GitLabApiException if the request failed
      */
     public List<GitLabGroupInfo> getGroups()
-            throws ApiConnectionFailureException, AuthenticationFailedException {
+            throws GitLabApiException {
         // get the json array with the groups from the response
         JSONArray jsonArray = get("/groups", null).getBody().getArray();
 
@@ -193,11 +194,10 @@ public class GitLabApiClient {
      *
      * @param groupId an ID of a group
      * @return the members of the group
-     * @throws ApiConnectionFailureException if the connection with the API failed
-     * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
+     * @throws GitLabApiException if the request failed
      */
     public List<GitLabGroupMemberInfo> getGroupMembers(int groupId)
-            throws ApiConnectionFailureException, AuthenticationFailedException {
+            throws GitLabApiException {
         // get the json array with the group members from the response
         JSONArray jsonArray = get("/groups/" + groupId + "/members", null).getBody().getArray();
 
@@ -214,11 +214,10 @@ public class GitLabApiClient {
      * Fetches all users from the system.
      *
      * @return a list of all users
-     * @throws ApiConnectionFailureException if the connection with the API failed
-     * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
+     * @throws GitLabApiException if the request failed
      */
     public List<GitLabUserInfo> getUsers()
-            throws ApiConnectionFailureException, AuthenticationFailedException {
+            throws GitLabApiException {
         // get the json array with the users from the response
         JSONArray jsonArray = get("/users", null).getBody().getArray();
 
@@ -237,13 +236,30 @@ public class GitLabApiClient {
      * The authenticated user is the owner of the private token.
      *
      * @return the authenticated user
-     * @throws ApiConnectionFailureException if the connection with the API failed
-     * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
+     * @throws GitLabApiException if the request failed
      */
     public GitLabUserInfo getCurrentUser()
-            throws ApiConnectionFailureException, AuthenticationFailedException {
+            throws GitLabApiException {
         // create a user object with the response
         return new FullGitLabUserInfo(get("/user", null).getBody().getObject());
+    }
+
+    /**
+     * Returns the user with a specific user ID.
+     *
+     * @param userId a user ID
+     * @return the user or null if not found
+     * @throws GitLabApiException if the request failed
+     */
+    public GitLabUserInfo getUser(int userId)
+            throws GitLabApiException {
+        try {
+            // create a user object with the response
+            return new FullGitLabUserInfo(get("/users/" + userId, null).getBody().getObject());
+        } catch (NotFoundException e) {
+            // user not found
+            return null;
+        }
     }
 
     /**
@@ -298,11 +314,10 @@ public class GitLabApiClient {
      * @param privateToken the GitLab private token
      * @param proxyHost    the http proxy host
      * @param proxyPort    the http proxy port
-     * @throws ApiConnectionFailureException if a connection to the API could not be found
-     * @throws AuthenticationFailedException if the private token is incorrect
+     * @throws GitLabApiException if the request failed
      */
     public static void testConnection(String host, String privateToken, String proxyHost, int proxyPort)
-            throws ApiConnectionFailureException, AuthenticationFailedException {
+            throws GitLabApiException {
         new GitLabApiClient(host, privateToken, proxyHost, proxyPort).getCurrentUser();
     }
 
@@ -340,9 +355,10 @@ public class GitLabApiClient {
      * @return an HTTP response containing a JSON body
      * @throws ApiConnectionFailureException if a connection to the API could not be found
      * @throws AuthenticationFailedException if the private token is incorrect
+     * @throws NotFoundException             if the resource wasn't found
      */
     private HttpResponse<JsonNode> get(String path, Map<String, Object> fields)
-            throws ApiConnectionFailureException, AuthenticationFailedException {
+            throws ApiConnectionFailureException, AuthenticationFailedException, NotFoundException {
         // include private token in request
         return get(path, fields, true);
     }
@@ -356,9 +372,10 @@ public class GitLabApiClient {
      * @return an HTTP response containing a JSON body
      * @throws ApiConnectionFailureException if a connection to the API could not be found
      * @throws AuthenticationFailedException if the private token is incorrect
+     * @throws NotFoundException             if the resource wasn't found
      */
     private HttpResponse<JsonNode> get(String path, Map<String, Object> fields, boolean includePrivateToken)
-            throws ApiConnectionFailureException, AuthenticationFailedException {
+            throws ApiConnectionFailureException, AuthenticationFailedException, NotFoundException {
         final GetRequest request = Unirest.get(getApiUrl() + path);
 
         request.fields(fields);
@@ -374,11 +391,15 @@ public class GitLabApiClient {
         }
 
         // check if the request was successful
-        if (response.getCode() != HTTP_200_OK) {
-            throw new AuthenticationFailedException("Invalid private token");
+        switch (response.getCode()) {
+            case HTTP_200_OK:
+                // request succeeded
+                return response;
+            case HTTP_404_NOT_FOUND:
+                throw new NotFoundException("Resource not found");
+            default:
+                throw new AuthenticationFailedException("Invalid private token");
         }
-
-        return response;
     }
 
     /**
@@ -387,11 +408,10 @@ public class GitLabApiClient {
      * @param path   the path relative to the API
      * @param fields the fields for the request
      * @return an HTTP response containing a JSON body
-     * @throws ApiConnectionFailureException if a connection to the API could not be found
-     * @throws AuthenticationFailedException if the private token is incorrect
+     * @throws GitLabApiException if the request failed
      */
     private HttpResponse<JsonNode> post(String path, Map<String, Object> fields)
-            throws ApiConnectionFailureException, AuthenticationFailedException {
+            throws GitLabApiException {
         // include private token in request
         return post(path, fields, true);
     }
@@ -405,9 +425,10 @@ public class GitLabApiClient {
      * @return an HTTP response containing a JSON body
      * @throws ApiConnectionFailureException if a connection to the API could not be found
      * @throws AuthenticationFailedException if the private token is incorrect
+     * @throws NotFoundException             if the resource wasn't found
      */
     private HttpResponse<JsonNode> post(String path, Map<String, Object> fields, boolean includePrivateToken)
-            throws ApiConnectionFailureException, AuthenticationFailedException {
+            throws ApiConnectionFailureException, AuthenticationFailedException, NotFoundException {
         HttpRequestWithBody request = Unirest.post(getApiUrl() + path);
 
         final MultipartBody body = request.fields(fields);
@@ -423,10 +444,14 @@ public class GitLabApiClient {
         }
 
         // check if the request was successful
-        if (response.getCode() != HTTP_201_CREATED) {
-            throw new AuthenticationFailedException("Invalid private token");
+        switch (response.getCode()) {
+            case HTTP_201_CREATED:
+                // request succeeded
+                return response;
+            case HTTP_404_NOT_FOUND:
+                throw new NotFoundException("Resource not found");
+            default:
+                throw new AuthenticationFailedException("Invalid private token");
         }
-
-        return response;
     }
 }
