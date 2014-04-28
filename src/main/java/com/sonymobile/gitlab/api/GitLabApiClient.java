@@ -190,6 +190,24 @@ public class GitLabApiClient {
     }
 
     /**
+     * Returns the group with a specific group ID.
+     *
+     * @param groupId a group ID
+     * @return the group or null if not found
+     * @throws GitLabApiException if the request failed
+     */
+    public GitLabGroupInfo getGroup(int groupId)
+            throws GitLabApiException {
+        try {
+            // create a group object with the response
+            return new GitLabGroupInfo(get("/groups/" + groupId, null).getBody().getObject());
+        } catch (NotFoundException e) {
+            // group not found
+            return null;
+        }
+    }
+
+    /**
      * Fetches the members of a group.
      *
      * @param groupId an ID of a group

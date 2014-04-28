@@ -61,7 +61,7 @@ public class GroupTest {
 
     @Test
     public void getId() {
-        assertThat(2, is(group.getId()));
+        assertThat(1, is(group.getId()));
     }
 
     @Test
