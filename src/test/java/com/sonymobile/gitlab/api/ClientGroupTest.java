@@ -38,6 +38,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
@@ -57,14 +58,13 @@ public class ClientGroupTest extends AbstractClientTest {
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBodyFile("/api/v3/groups.json")));
-        // get the groups
+
         List<GitLabGroupInfo> groups = client.getGroups();
 
         assertThat(groups, hasSize(1));
-        // pick out the first (and only) group
 
         GitLabGroupInfo group = groups.get(0);
-        assertThat(2, is(group.getId()));
+        assertThat(1, is(group.getId()));
         assertThat("Group Name", is(group.getName()));
         assertThat("groupname", is(group.getPath()));
     }
@@ -87,6 +87,52 @@ public class ClientGroupTest extends AbstractClientTest {
     }
 
     /**
+     * Gets a group.
+     */
+    @Test
+    public void getGroup() throws Exception {
+        // stub for expected request to get the group
+        stubFor(get(urlEqualTo("/api/v3/groups/1?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBodyFile("/api/v3/groups/1.json")));
+
+        GitLabGroupInfo group = client.getGroup(1);
+        assertThat(1, is(group.getId()));
+        assertThat("Group Name", is(group.getName()));
+        assertThat("groupname", is(group.getPath()));
+    }
+
+    /**
+     * Attempts to get a group that doesn't exist.
+     */
+    @Test
+    public void getNonexistentGroup() throws Exception {
+        // stub for expected request to get the group
+        stubFor(get(urlEqualTo("/api/v3/groups/100?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(404)));
+
+        assertThat(client.getGroup(100), is(nullValue()));
+    }
+
+    /**
+     * Attempts to get a group with an invalid token.
+     */
+    @Test
+    public void getGroupWithInvalidPrivateToken() throws Exception {
+        // stub for expected request to get the group
+        stubFor(get(urlEqualTo("/api/v3/groups/1?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(401)));
+        // authentication should fail
+        thrown.expect(AuthenticationFailedException.class);
+
+        // try to get the group from the API and expect it to throw and exception
+        client.getGroup(1);
+    }
+
+    /**
      * Gets all groups members of a group.
      */
     @Test
@@ -96,12 +142,11 @@ public class ClientGroupTest extends AbstractClientTest {
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBodyFile("/api/v3/groups/1/members.json")));
-        // get the group members
+
         List<GitLabGroupMemberInfo> members = client.getGroupMembers(1);
 
         assertThat(members, hasSize(3));
 
-        // get members from the group members list
         GitLabGroupMemberInfo normalMember = members.get(0);
         GitLabGroupMemberInfo blockedMember = members.get(1);
         GitLabGroupMemberInfo adminMember = members.get(2);

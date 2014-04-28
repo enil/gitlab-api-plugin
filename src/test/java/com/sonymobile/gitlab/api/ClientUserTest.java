@@ -29,11 +29,15 @@ import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
 import com.sonymobile.gitlab.model.GitLabUserInfo;
 import org.junit.Test;
 
+import java.util.List;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -43,20 +47,105 @@ import static org.junit.Assert.assertThat;
  */
 public class ClientUserTest extends AbstractClientTest {
     /**
-     * Gets the authenticated user with a valid token.
+     * Gets all users.
      */
     @Test
-    public void getCurrentUserWithValidPrivateToken() throws Exception {
+    public void getUsers() throws Exception {
+        // stub for expected request to get the all users
+        stubFor(get(urlEqualTo("/api/v3/users?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBodyFile("api/v3/users.json")));
+
+        // get all users
+        List<GitLabUserInfo> users = client.getUsers();
+
+        assertThat(users, hasSize(3));
+
+        GitLabUserInfo user = users.get(0);
+        assertThat(1, is(user.getId()));
+        assertThat("username", is(user.getUsername()));
+        assertThat("user@example.com", is(user.getEmail()));
+        assertThat("User Name", is(user.getName()));
+        assertThat(false, is(user.isBlocked()));
+    }
+
+    /**
+     * Attempts to get all users with an invalid token.
+     */
+    @Test
+    public void getUsersWithInvalidPrivateToken() throws Exception {
+        // stub for expected request to get the all users
+        stubFor(get(urlEqualTo("/api/v3/users?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(401)));
+        // authentication should fail
+        thrown.expect(AuthenticationFailedException.class);
+
+        // try to get all users from the API and expect it to throw and exception
+        client.getUsers();
+    }
+
+    /**
+     * Gets a user.
+     */
+    @Test
+    public void getUser() throws Exception {
+        // stub for expected request to get the user
+        stubFor(get(urlEqualTo("/api/v3/users/1?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withBodyFile("api/v3/users/1.json")));
+
+        GitLabUserInfo user = client.getUser(1);
+        assertThat(1, is(user.getId()));
+        assertThat("username", is(user.getUsername()));
+        assertThat("user@example.com", is(user.getEmail()));
+        assertThat("User Name", is(user.getName()));
+        assertThat(false, is(user.isBlocked()));
+    }
+
+    /**
+     * Attempts to get a user that doesn't exist.
+     */
+    @Test
+    public void getNonexistentUser() throws Exception {
+        // stub for expected request to get the user
+        stubFor(get(urlEqualTo("/api/v3/users/100?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(404)));
+
+        assertThat(client.getUser(100), is(nullValue()));
+    }
+
+    /**
+     * Attempts to get a user with an invalid token.
+     */
+    @Test
+    public void getUserWithInvalidPrivateToken() throws Exception {
+        // stub for expected request to get the user
+        stubFor(get(urlEqualTo("/api/v3/users/1?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(401)));
+        // authentication should fail
+        thrown.expect(AuthenticationFailedException.class);
+
+        // try to get the user from the API and expect it to throw and exception
+        client.getUser(1);
+    }
+
+    /**
+     * Gets the authenticated user.
+     */
+    @Test
+    public void getCurrentUser() throws Exception {
         // stub for expected request to get the current user
         stubFor(get(urlEqualTo("/api/v3/user?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBodyFile("api/v3/user.json")));
 
-        // get the current user
         GitLabUserInfo user = client.getCurrentUser();
-
-        // check that the values of the user are correct
         assertThat(1, is(user.getId()));
         assertThat("username", is(user.getUsername()));
         assertThat("user@example.com", is(user.getEmail()));
