@@ -211,6 +211,27 @@ public class GitLabApiClient {
     }
 
     /**
+     * Fetches all users from the system.
+     *
+     * @return a list of all users
+     * @throws ApiConnectionFailureException if the connection with the API failed
+     * @throws AuthenticationFailedException if the authentication failed because of bad user credentials
+     */
+    public List<GitLabUserInfo> getUsers()
+            throws ApiConnectionFailureException, AuthenticationFailedException {
+        // get the json array with the users from the response
+        JSONArray jsonArray = get("/users", null).getBody().getArray();
+
+        // convert all objects in the json array to users
+        ArrayList<GitLabUserInfo> users = new ArrayList<GitLabUserInfo>(jsonArray.length());
+        for (final JSONObject jsonObject : iterator(jsonArray)) {
+            users.add(new FullGitLabUserInfo(jsonObject));
+        }
+
+        return users;
+    }
+
+    /**
      * Returns the user the API is authenticated with.
      *
      * The authenticated user is the owner of the private token.

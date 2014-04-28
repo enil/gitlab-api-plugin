@@ -61,8 +61,8 @@ public class ClientGroupTest extends AbstractClientTest {
         List<GitLabGroupInfo> groups = client.getGroups();
 
         assertThat(groups, hasSize(1));
-        // pick out the first (and only) group
 
+        // pick out the first (and only) group
         GitLabGroupInfo group = groups.get(0);
         assertThat(2, is(group.getId()));
         assertThat("Group Name", is(group.getName()));
