@@ -35,6 +35,7 @@ import com.mashape.unirest.request.body.MultipartBody;
 import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
 import com.sonymobile.gitlab.exceptions.GitLabApiException;
+import com.sonymobile.gitlab.exceptions.GroupNotFoundException;
 import com.sonymobile.gitlab.exceptions.NotFoundException;
 import com.sonymobile.gitlab.model.FullGitLabUserInfo;
 import com.sonymobile.gitlab.model.GitLabGroupInfo;
@@ -193,8 +194,8 @@ public class GitLabApiClient {
      * Returns the group with a specific group ID.
      *
      * @param groupId a group ID
-     * @return the group or null if not found
-     * @throws GitLabApiException if the request failed
+     * @return the group
+     * @throws GitLabApiException if the request failed or if the group is missing
      */
     public GitLabGroupInfo getGroup(int groupId)
             throws GitLabApiException {
@@ -202,8 +203,7 @@ public class GitLabApiClient {
             // create a group object with the response
             return new GitLabGroupInfo(get("/groups/" + groupId, null).getBody().getObject());
         } catch (NotFoundException e) {
-            // group not found
-            return null;
+            throw new GroupNotFoundException("A group with group ID " + groupId + " does not exist");
         }
     }
 
@@ -212,12 +212,17 @@ public class GitLabApiClient {
      *
      * @param groupId an ID of a group
      * @return the members of the group
-     * @throws GitLabApiException if the request failed
+     * @throws GitLabApiException if the request failed or if the group is missing
      */
     public List<GitLabGroupMemberInfo> getGroupMembers(int groupId)
             throws GitLabApiException {
-        // get the json array with the group members from the response
-        JSONArray jsonArray = get("/groups/" + groupId + "/members", null).getBody().getArray();
+        JSONArray jsonArray;
+        try {
+            // get the json array with the group members from the response
+            jsonArray = get("/groups/" + groupId + "/members", null).getBody().getArray();
+        } catch (NotFoundException e) {
+            throw new GroupNotFoundException("A group with group ID " + groupId + " does not exist");
+        }
 
         // convert all objects in the json array to groups
         ArrayList<GitLabGroupMemberInfo> members = new ArrayList<GitLabGroupMemberInfo>(jsonArray.length());

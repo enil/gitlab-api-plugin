@@ -25,23 +25,25 @@
 
 package com.sonymobile.gitlab.exceptions;
 
+import java.lang.Throwable;
+
 /**
- * An exception indicating that the requested resource wasn't found by the API.
+ * An exception indicating that the requested group wasn't found by the API.
  *
  * @author Emil Nilsson
  */
-public class NotFoundException extends GitLabApiException {
+public class GroupNotFoundException extends NotFoundException {
     /**
-     * @see GitLabApiException#GitLabApiException(String)
+     * @see NotFoundException#NotFoundException(String)
      */
-    public NotFoundException(String message) {
+    public GroupNotFoundException(String message) {
         super(message);
     }
 
     /**
-     * @see GitLabApiException#GitLabApiException(String, Throwable)
+     * @see NotFoundException#NotFoundException(String, Throwable)
      */
-    public NotFoundException(String message, Throwable cause) {
+    public GroupNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -26,6 +26,7 @@
 package com.sonymobile.gitlab.api;
 
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
+import com.sonymobile.gitlab.exceptions.GroupNotFoundException;
 import com.sonymobile.gitlab.model.GitLabAccessLevel;
 import com.sonymobile.gitlab.model.GitLabGroupInfo;
 import com.sonymobile.gitlab.model.GitLabGroupMemberInfo;
@@ -38,7 +39,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
@@ -77,7 +77,8 @@ public class ClientGroupTest extends AbstractClientTest {
         // stub for expected request to get all groups
         stubFor(get(urlEqualTo("/api/v3/groups?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
-                        .withStatus(401)));
+                        .withStatus(401)
+                        .withBodyFile("/401.json")));
 
         // authentication should fail
         thrown.expect(AuthenticationFailedException.class);
@@ -109,11 +110,15 @@ public class ClientGroupTest extends AbstractClientTest {
     @Test
     public void getNonexistentGroup() throws Exception {
         // stub for expected request to get the group
-        stubFor(get(urlEqualTo("/api/v3/groups/100?private_token=" + PRIVATE_TOKEN))
+        stubFor(get(urlEqualTo("/api/v3/groups/1?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
-                        .withStatus(404)));
+                        .withStatus(404)
+                        .withBodyFile("/404.json")));
 
-        assertThat(client.getGroup(100), is(nullValue()));
+        // should not find group
+        thrown.expect(GroupNotFoundException.class);
+
+        client.getGroup(1);
     }
 
     /**
@@ -124,7 +129,9 @@ public class ClientGroupTest extends AbstractClientTest {
         // stub for expected request to get the group
         stubFor(get(urlEqualTo("/api/v3/groups/1?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
-                        .withStatus(401)));
+                        .withStatus(401)
+                        .withBodyFile("/401.json")));
+
         // authentication should fail
         thrown.expect(AuthenticationFailedException.class);
 
@@ -162,7 +169,23 @@ public class ClientGroupTest extends AbstractClientTest {
         assertThat(GitLabAccessLevel.OWNER, is(adminMember.getAccessLevel()));
         assertThat(3, is(adminMember.getId()));
         assertThat(adminMember.isBlocked(), is(false));
+    }
 
+    /**
+     * Attempts to get all group members from a group that doesn't exist.
+     */
+    @Test
+    public void getGroupMembersFromNonexistentGroup() throws Exception {
+        // stub for expected request to get the group
+        stubFor(get(urlEqualTo("/api/v3/groups/1/members?private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withBodyFile("/404.json")));
+
+        // should not find group
+        thrown.expect(GroupNotFoundException.class);
+
+        client.getGroupMembers(1);
     }
 
     /**
@@ -173,7 +196,8 @@ public class ClientGroupTest extends AbstractClientTest {
         // stub for expected request to get group members
         stubFor(get(urlEqualTo("/api/v3/groups/1/members?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
-                        .withStatus(401)));
+                        .withStatus(401)
+                        .withBodyFile("/401.json")));
 
         // authentication should fail
         thrown.expect(AuthenticationFailedException.class);
