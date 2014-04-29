@@ -29,7 +29,7 @@ A client for [GitLab][] REST API written in Java.
 
 ## Limitations
 
-The client can currently only get data from the API.
+The client can currently only read data from the API and not make any changes.
 
 ## Installation
 
@@ -69,7 +69,7 @@ It is possible to explicitly fetch a session using `getSession(login, password)`
  to using the static `openSession(host, login, password)` method:
 
     // get a session for the user jsmith
-    GitLabSession session = client.getSession("jsmith", "123456");
+    GitLabSessionInfo session = client.getSession("jsmith", "123456");
 
     // print the user's token
     System.out.println("Private token: " + session.getPrivateToken());
@@ -77,12 +77,39 @@ It is possible to explicitly fetch a session using `getSession(login, password)`
 
 The session is fetched with a `POST` request to [/session][session].
 
-### Current user
+### User
+
+#### All users
+
+The method `getUsers()` can be used to fetch all users:
+
+    // print the name of all users
+    for (final GitLabUserInfo user : client.getUsers()) {
+        System.out.println(user.getName());
+    }
+
+The users are fetched with a `GET` request to [/users][listusers].
+
+#### Single User by ID
+
+To fetch just a single user by its user ID, use `getUser(userId)`:
+
+    GitLabUserInfo user = client.getUser(1);
+
+    // print the user's name
+    System.out.println("User: " + user.getName());
+    // prints "User: [username]
+
+If the user doesn't exist `getUser(userId)` will return `null`.
+
+The user is fetched with a `GET` request to [/users/:id][singleuser].
+
+#### Current user
 
 It is possible to retrieve the current user, e.g. the user the private token belongs to, using the `getCurrentUser()`
 method:
 
-    GitLabUser user = client.getCurrentUser();
+    GitLabUserInfo user = client.getCurrentUser();
 
     // print the user's name
     System.out.println("Logged in user: " + user.getName());
@@ -92,16 +119,39 @@ The current user is fetched with a `GET` request to [/user][currentuser].
 
 ### Groups
 
+#### All groups
+
 The method `getGroups()` can be used to fetch all groups accessible to the current user (administrators have access to
  all groups):
 
     // print the ID and name of all groups
-    for (final GitLabGroup group : client.getGroups()) {
+    for (final GitLabGroupInfo group : client.getGroups()) {
         System.out.println(group.getID() + ": " + group.getName());
         // prints "1: [groupname]" and so on
     }
 
 The groups are fetched with a `GET` request to [/groups][allgroups].
+
+#### Single group by ID
+
+The `getGroup(groupId)` method can be used to fetch a group by its group ID:
+
+    GitLabGroupInfo group = client.getGroup(1);
+    System.out.println(group.getID() + ": " + group.getName());
+    // prints "1: [groupname]"
+
+The group is fetched with a `GET` request to [/groups/:id][groupdetails].
+
+### Group members
+
+The method `getGroupMembers(groupId)` returns a list of all members of a group specified by its group ID:
+
+    // prints the names of all members of the group with ID 1
+    for (final GitLabGroupMemberInfo member : client.getGroupMembers(1)) {
+        System.out.println(member.getName());
+    }
+
+The group members are fetched with a `GET` request to [/groups/:id/members][groupmembers].
 
 ### Proxy
 
@@ -126,6 +176,10 @@ This can also be done from the command line when running your application:
 
 [GitLab]:       https://www.gitlab.com/
 [session]:      http://api.gitlab.org/session.html
+[listusers]:    http://doc.gitlab.com/ce/api/users.html#list-users
+[singleuser]:   http://doc.gitlab.com/ce/api/users.html#single-user
 [currentuser]:  http://doc.gitlab.com/ce/api/users.html#current-user
 [allgroups]:    http://doc.gitlab.com/ce/api/groups.html#list-project-groups
+[groupdetails]: http://doc.gitlab.com/ce/api/groups.html#details-of-a-group
+[groupmembers]: http://doc.gitlab.com/ce/api/groups.html#list-group-members
 [javaproxy]:    http://docs.oracle.com/javase/6/docs/technotes/guides/net/proxies.html
