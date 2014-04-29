@@ -37,6 +37,7 @@ import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
 import com.sonymobile.gitlab.exceptions.GitLabApiException;
 import com.sonymobile.gitlab.exceptions.GroupNotFoundException;
 import com.sonymobile.gitlab.exceptions.NotFoundException;
+import com.sonymobile.gitlab.exceptions.UserNotFoundException;
 import com.sonymobile.gitlab.model.FullGitLabUserInfo;
 import com.sonymobile.gitlab.model.GitLabGroupInfo;
 import com.sonymobile.gitlab.model.GitLabGroupMemberInfo;
@@ -271,7 +272,7 @@ public class GitLabApiClient {
      * Returns the user with a specific user ID.
      *
      * @param userId a user ID
-     * @return the user or null if not found
+     * @return the user
      * @throws GitLabApiException if the request failed
      */
     public GitLabUserInfo getUser(int userId)
@@ -280,8 +281,7 @@ public class GitLabApiClient {
             // create a user object with the response
             return new FullGitLabUserInfo(get("/users/" + userId, null).getBody().getObject());
         } catch (NotFoundException e) {
-            // user not found
-            return null;
+            throw new UserNotFoundException("A group with group ID " + userId + " does not exist");
         }
     }
 

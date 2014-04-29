@@ -26,6 +26,7 @@
 package com.sonymobile.gitlab.api;
 
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
+import com.sonymobile.gitlab.exceptions.UserNotFoundException;
 import com.sonymobile.gitlab.model.GitLabUserInfo;
 import org.junit.Test;
 
@@ -36,7 +37,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
@@ -78,7 +78,9 @@ public class ClientUserTest extends AbstractClientTest {
         // stub for expected request to get the all users
         stubFor(get(urlEqualTo("/api/v3/users?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
-                        .withStatus(401)));
+                        .withStatus(401)
+                        .withBodyFile("/401.json")));
+
         // authentication should fail
         thrown.expect(AuthenticationFailedException.class);
 
@@ -111,11 +113,15 @@ public class ClientUserTest extends AbstractClientTest {
     @Test
     public void getNonexistentUser() throws Exception {
         // stub for expected request to get the user
-        stubFor(get(urlEqualTo("/api/v3/users/100?private_token=" + PRIVATE_TOKEN))
+        stubFor(get(urlEqualTo("/api/v3/users/1?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
-                        .withStatus(404)));
+                        .withStatus(404)
+                        .withBodyFile("/404.json")));
 
-        assertThat(client.getUser(100), is(nullValue()));
+        // should not find user
+        thrown.expect(UserNotFoundException.class);
+
+        client.getUser(1);
     }
 
     /**
@@ -126,7 +132,9 @@ public class ClientUserTest extends AbstractClientTest {
         // stub for expected request to get the user
         stubFor(get(urlEqualTo("/api/v3/users/1?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
-                        .withStatus(401)));
+                        .withStatus(401)
+                        .withBodyFile("/401.json")));
+
         // authentication should fail
         thrown.expect(AuthenticationFailedException.class);
 
@@ -161,7 +169,9 @@ public class ClientUserTest extends AbstractClientTest {
         // stub for expected request to get the current user
         stubFor(get(urlEqualTo("/api/v3/user?private_token=" + PRIVATE_TOKEN))
                 .willReturn(aResponse()
-                        .withStatus(401)));
+                        .withStatus(401)
+                        .withBodyFile("/401.json")));
+
         // authentication should fail
         thrown.expect(AuthenticationFailedException.class);
 
