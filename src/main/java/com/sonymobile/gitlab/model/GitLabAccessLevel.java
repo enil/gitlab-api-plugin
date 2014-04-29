@@ -50,6 +50,9 @@ public enum GitLabAccessLevel {
     /** The unique ID. */
     private final int id;
 
+    /** Access levels by name. */
+    public static final String[] all = {OWNER.name, MASTER.name, DEVELOPER.name, REPORTER.name, GUEST.name};
+
     /**
      * Creates an access level with a name and unique id
      *
