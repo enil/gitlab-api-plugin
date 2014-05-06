@@ -27,11 +27,17 @@ package com.sonymobile.gitlab.api;
 
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests creating instances of a GitLab API client.
+ * Tests creating instances of a {@link GitLabApiClient}.
  *
  * @author Emil Nilsson
  */
@@ -47,10 +53,10 @@ public class ClientInstantiationTest extends AbstractClientTest {
                 "http://proxy",
                 1234);
 
-        assertThat("http://gitlab.example.org", is(newClient.getHost()));
-        assertThat("0123456789abcdef", is(newClient.getPrivateToken()));
-        assertThat("http://proxy", is(newClient.getProxyHost()));
-        assertThat(1234, is(newClient.getProxyPort()));
+        assertThat(newClient.getHost(), is("http://gitlab.example.org"));
+        assertThat(newClient.getPrivateToken(), is("0123456789abcdef"));
+        assertThat(newClient.getProxyHost(), is("http://proxy"));
+        assertThat(newClient.getProxyPort(), is(1234));
     }
 
     /**
@@ -66,12 +72,37 @@ public class ClientInstantiationTest extends AbstractClientTest {
                 "proxyuser",
                 "proxypassword");
 
-        assertThat("http://gitlab.example.org", is(newClient.getHost()));
-        assertThat("0123456789abcdef", is(newClient.getPrivateToken()));
-        assertThat("http://proxy", is(newClient.getProxyHost()));
-        assertThat(1234, is(newClient.getProxyPort()));
-        assertThat("proxyuser", is(newClient.getProxyUser()));
-        assertThat("proxypassword", is(newClient.getProxyPassword()));
+        assertThat(newClient.getHost(), is("http://gitlab.example.org"));
+        assertThat(newClient.getPrivateToken(), is("0123456789abcdef"));
+        assertThat(newClient.getProxyHost(), is("http://proxy"));
+        assertThat(newClient.getProxyPort(), is(1234));
+        assertThat(newClient.getProxyUser(), is("proxyuser"));
+        assertThat(newClient.getProxyPassword(), is("proxypassword"));
+    }
+
+    /**
+     * Tests creating a new instance with a proxy with proxy credentials and a list of excluded hosts.
+     */
+    @Test
+    public void createInstanceWithProxyCredentialsAndExcludedHosts() {
+        List<Pattern> excludedHosts = Collections.singletonList(Pattern.compile("localhost"));
+
+        GitLabApiClient newClient = new GitLabApiClient(
+                "http://gitlab.example.org",
+                "0123456789abcdef",
+                "http://proxy",
+                1234,
+                "proxyuser",
+                "proxypassword",
+                excludedHosts);
+
+        assertThat(newClient.getHost(), is("http://gitlab.example.org"));
+        assertThat(newClient.getPrivateToken(), is("0123456789abcdef"));
+        assertThat(newClient.getProxyHost(), is("http://proxy"));
+        assertThat(newClient.getProxyPort(), is(1234));
+        assertThat(newClient.getProxyUser(), is("proxyuser"));
+        assertThat(newClient.getProxyPassword(), is("proxypassword"));
+        assertThat(newClient.getExcludedHostnames(), hasToString("[localhost]"));
     }
 
     /**
@@ -83,9 +114,9 @@ public class ClientInstantiationTest extends AbstractClientTest {
                 "http://gitlab.example.org",
                 "0123456789abcdef");
 
-        assertThat("http://gitlab.example.org", is(newClient.getHost()));
-        assertThat("0123456789abcdef", is(newClient.getPrivateToken()));
-        assertThat(null, is(newClient.getProxyHost()));
+        assertThat(newClient.getHost(), is("http://gitlab.example.org"));
+        assertThat(newClient.getPrivateToken(), is("0123456789abcdef"));
+        assertThat(newClient.getProxyHost(), is(nullValue()));
     }
 
     /**
@@ -102,9 +133,9 @@ public class ClientInstantiationTest extends AbstractClientTest {
         // assume the identity of another user
         GitLabApiClient newClient = oldClient.impersonate("9876543210abcdef");
 
-        assertThat("http://gitlab.example.org", is(newClient.getHost()));
-        assertThat("9876543210abcdef", is(newClient.getPrivateToken()));
-        assertThat("http://proxy", is(newClient.getProxyHost()));
-        assertThat(1234, is(newClient.getProxyPort()));
+        assertThat(newClient.getHost(), is("http://gitlab.example.org"));
+        assertThat(newClient.getPrivateToken(), is("9876543210abcdef"));
+        assertThat(newClient.getProxyHost(), is("http://proxy"));
+        assertThat(newClient.getProxyPort(), is(1234));
     }
 }
