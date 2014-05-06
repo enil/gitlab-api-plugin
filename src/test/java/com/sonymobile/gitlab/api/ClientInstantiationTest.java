@@ -37,10 +37,10 @@ import static org.junit.Assert.assertThat;
  */
 public class ClientInstantiationTest extends AbstractClientTest {
     /**
-     * Creates a new instance with a proxy.
+     * Tests creating a new instance with a proxy.
      */
     @Test
-    public void createInstance() {
+    public void createInstanceWithProxy() {
         GitLabApiClient newClient = new GitLabApiClient(
                 "http://gitlab.example.org",
                 "0123456789abcdef",
@@ -54,7 +54,28 @@ public class ClientInstantiationTest extends AbstractClientTest {
     }
 
     /**
-     * Creates a new instance without a proxy.
+     * Tests creating a new instance with a proxy with proxy credentials.
+     */
+    @Test
+    public void createInstanceWithProxyCredentials() {
+        GitLabApiClient newClient = new GitLabApiClient(
+                "http://gitlab.example.org",
+                "0123456789abcdef",
+                "http://proxy",
+                1234,
+                "proxyuser",
+                "proxypassword");
+
+        assertThat("http://gitlab.example.org", is(newClient.getHost()));
+        assertThat("0123456789abcdef", is(newClient.getPrivateToken()));
+        assertThat("http://proxy", is(newClient.getProxyHost()));
+        assertThat(1234, is(newClient.getProxyPort()));
+        assertThat("proxyuser", is(newClient.getProxyUser()));
+        assertThat("proxypassword", is(newClient.getProxyPassword()));
+    }
+
+    /**
+     * Tests creating a new instance without a proxy.
      */
     @Test
     public void createInstanceWithoutProxy() {
@@ -68,7 +89,7 @@ public class ClientInstantiationTest extends AbstractClientTest {
     }
 
     /**
-     * Creates a new instance by assuming the identity of another user.
+     * Tests creating a new instance by assuming the identity of another user.
      */
     @Test
     public void createInstanceByImpersonatingUser() {
