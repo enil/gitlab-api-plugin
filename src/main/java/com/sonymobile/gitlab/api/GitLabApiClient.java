@@ -470,7 +470,7 @@ public class GitLabApiClient {
             if (proxyUser != null) {
                 CredentialsProvider proxyCredentialsProvider = new BasicCredentialsProvider();
                 Credentials proxyCredentials = new UsernamePasswordCredentials(proxyUser, proxyPassword);
-                proxyCredentialsProvider.setCredentials(new AuthScope(this.proxyHost, proxyPort), proxyCredentials);
+                proxyCredentialsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), proxyCredentials);
 
                 builder.setDefaultCredentialsProvider(proxyCredentialsProvider);
             }

@@ -25,6 +25,7 @@
 
 package com.sonymobile.gitlab.http;
 
+import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.conn.routing.HttpRoute;
@@ -49,21 +50,20 @@ import static org.junit.Assert.assertThat;
  */
 public class PatternProxyRoutePlannerTest {
     /** Hostname patterns to exclude. */
-    private static final List<Pattern> HOSTNAME_PATTERNS = new ArrayList<Pattern>();
-
-    static {
-        HOSTNAME_PATTERNS.add(Pattern.compile("127\\.0\\.0\\.1"));
-        HOSTNAME_PATTERNS.add(Pattern.compile("domain\\.com"));
-        HOSTNAME_PATTERNS.add(Pattern.compile("www\\.domain\\.com"));
-        HOSTNAME_PATTERNS.add(Pattern.compile(".*\\.domain\\.com"));
-    }
+    private static final List<Pattern> HOSTNAME_PATTERNS = new ArrayList<Pattern>() {
+        {
+            add(Pattern.compile("127\\.0\\.0\\.1"));
+            add(Pattern.compile("domain"));
+            add(Pattern.compile("www\\.domain"));
+            add(Pattern.compile(".*\\.domain"));
+        }
+    };
 
     /** The host of the proxy. */
     private static final HttpHost PROXY_HOST = new HttpHost("proxy");
 
     /** The router planner. */
     private PatternProxyRoutePlanner routerPlanner;
-
 
     @Before
     public void setUp() {
@@ -77,12 +77,11 @@ public class PatternProxyRoutePlannerTest {
      */
     @Test
     public void withNoMatch() throws Exception {
-        HttpRoute route = routerPlanner.determineRoute(
-                new HttpHost("notmatching"),
-                createRequest("notmatching"),
-                new BasicHttpContext());
+        HttpRoute firstRoute = determinRoute("notmatching");
+        HttpRoute secondRoute = determinRoute("notmatching");
 
-        assertThat("Should use proxy", route.getProxyHost().getHostName(), is("proxy"));
+        assertThat("Should use proxy", firstRoute.getProxyHost().getHostName(), is("proxy"));
+        assertThat("Should use same route again", secondRoute.getProxyHost().getHostName(), is("proxy"));
     }
 
     /**
@@ -91,13 +90,14 @@ public class PatternProxyRoutePlannerTest {
      */
     @Test
     public void withMatch() throws Exception {
-        HttpRoute route = routerPlanner.determineRoute(
-                new HttpHost("domain.com"),
-                createRequest("domain.com"),
-                new BasicHttpContext());
+        HttpRoute firstRoute = determinRoute("domain");
+        HttpRoute secondRoute = determinRoute("domain");
 
-        assertThat("Should bypass proxy", route.getProxyHost(), is(nullValue()));
-        assertThat(route.getTargetHost().getHostName(), is("domain.com"));
+        assertThat("Should bypass proxy", firstRoute.getProxyHost(), is(nullValue()));
+        assertThat(firstRoute.getTargetHost().getHostName(), is("domain"));
+
+        assertThat("Should bypass proxy the again", secondRoute.getProxyHost(), is(nullValue()));
+        assertThat("Should use same route the again", secondRoute.getTargetHost().getHostName(), is("domain"));
     }
 
     /**
@@ -106,13 +106,25 @@ public class PatternProxyRoutePlannerTest {
      */
     @Test
     public void withWildCardMatch() throws Exception {
-        HttpRoute route = routerPlanner.determineRoute(
-                new HttpHost("subdomain.domain.com"),
-                createRequest("subdomain.domain.com"),
-                new BasicHttpContext());
+        HttpRoute firstRoute = determinRoute("subdomain.domain");
+        HttpRoute secondRoute = determinRoute("subdomain.domain");
 
-        assertThat("Should bypass proxy", route.getProxyHost(), is(nullValue()));
-        assertThat("Should match wildcard", route.getTargetHost().getHostName(), is("subdomain.domain.com"));
+        assertThat("Should bypass proxy", firstRoute.getProxyHost(), is(nullValue()));
+        assertThat("Should match wildcard", firstRoute.getTargetHost().getHostName(), is("subdomain.domain"));
+        assertThat("Should bypass proxy again", secondRoute.getProxyHost(), is(nullValue()));
+        assertThat("Should match wildcard again", secondRoute.getTargetHost().getHostName(), is("subdomain.domain"));
+    }
+
+    /**
+     * Call {@link PatternProxyRoutePlanner#determineRoute(HttpHost, HttpRequest, HttpContext)} with a specified
+     * hostname and a standard request and context.
+     *
+     * @param hostname the hostname
+     * @return the returned route
+     * @throws HttpException if the method threw an HTTP exception
+     */
+    private HttpRoute determinRoute(String hostname) throws HttpException {
+        return routerPlanner.determineRoute(new HttpHost(hostname), createRequest(hostname), new BasicHttpContext());
     }
 
     /**
