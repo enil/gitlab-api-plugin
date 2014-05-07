@@ -212,17 +212,19 @@ public class GitLabApiClient {
     /**
      * Tests if a connection can be established with the given parameters.
      *
-     * @param host          the URL of the host server (excluding the path)
-     * @param privateToken  the private token used to authenticate the connection
-     * @param proxyHost     the proxy host name
-     * @param proxyPort     the proxy port
-     * @param proxyUser     the proxy user
-     * @param proxyPassword the proxy password
+     * @param host              the URL of the host server (excluding the path)
+     * @param privateToken      the private token used to authenticate the connection
+     * @param proxyHost         the proxy host name
+     * @param proxyPort         the proxy port
+     * @param proxyUser         the proxy user
+     * @param proxyPassword     the proxy password
+     * @param excludedHostnames the excluded hosts
      * @throws GitLabApiException if the request failed
      */
     public static void testConnection(String host, String privateToken,
                                       String proxyHost, int proxyPort,
-                                      String proxyUser, String proxyPassword)
+                                      String proxyUser, String proxyPassword,
+                                      List<Pattern> excludedHostnames)
             throws GitLabApiException {
         new GitLabApiClient(
                 host,
@@ -230,7 +232,8 @@ public class GitLabApiClient {
                 proxyHost,
                 proxyPort,
                 proxyUser,
-                proxyPassword).getCurrentUser();
+                proxyPassword,
+                excludedHostnames).getCurrentUser();
     }
 
     /**
