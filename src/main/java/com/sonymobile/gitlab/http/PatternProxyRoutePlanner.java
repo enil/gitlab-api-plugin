@@ -28,7 +28,6 @@ package com.sonymobile.gitlab.http;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
-import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.protocol.HttpContext;
 
@@ -48,7 +47,7 @@ public class PatternProxyRoutePlanner extends DefaultProxyRoutePlanner {
     private final List<Pattern> excludedHostnames;
 
     /** A map mapping already matched hosts to a boolean indicating whether the host is excluded. */
-    private final HashMap<String, Boolean> matchedHostnameExclusions = new HashMap<String, Boolean>();
+    private final HashMap<String, Boolean> matchedExcludedHostnames = new HashMap<String, Boolean>();
 
     /**
      * Creates a route planner using a list of hostnames to exclude from the proxy.
@@ -71,79 +70,39 @@ public class PatternProxyRoutePlanner extends DefaultProxyRoutePlanner {
     }
 
     /**
-     * Chooses a route to a host, bypassing the router for excluded hostnames.
+     * Chooses a proxy for a host, bypassing the proxy for excluded hostnames.
      *
-     * @param host    the host
+     * @param target  the host
      * @param request the request
      * @param context the HTTP context
-     * @return a route to the host
+     * @return the proxy or null if the proxy isn't used
      * @throws HttpException if an HTTP exception occurred
      */
     @Override
-    public HttpRoute determineRoute(HttpHost host, HttpRequest request, HttpContext context) throws HttpException {
-        // try to get previously matched route
-        HttpRoute route = getPreviouslyMatchedRoute(host, request, context);
+    protected HttpHost determineProxy(HttpHost target, HttpRequest request, HttpContext context) throws HttpException {
+        final String hostname = target.getHostName();
 
-        if (route == null) {
-            // match and store the result
-            route = matchRoute(host, request, context);
-        }
-        return route;
-    }
-
-    /**
-     * Matches a route for a host and store the result for the future
-     *
-     * @param host    the host
-     * @param request the request
-     * @param context the HTTP context
-     * @return a route to the host
-     * @throws HttpException if an HTTP exception occurred
-     */
-    private HttpRoute matchRoute(HttpHost host, HttpRequest request, HttpContext context)
-            throws HttpException {
-        final String hostname = host.getHostName();
-
-        // check if hostname matches any of the excluded hostname patterns
-        for (final Pattern hostnamePattern : excludedHostnames) {
-            if (hostnamePattern.matcher(hostname).matches()) {
-                // exclude hostname from proxy in the future
-                matchedHostnameExclusions.put(hostname, true);
+        // check if the hostname has been matched before
+        if (matchedExcludedHostnames.containsKey(hostname)) {
+            if (matchedExcludedHostnames.get(hostname)) {
                 // bypass proxy
-                return new HttpRoute(host);
-            }
-        }
-
-        // use proxy in the future
-        matchedHostnameExclusions.put(hostname, false);
-        // get proxy route
-        return super.determineRoute(host, request, context);
-    }
-
-    /**
-     * Gets a route previously matched for the host.
-     *
-     * @param host    the host
-     * @param request the request
-     * @param context the HTTP context
-     * @return a route to the host or null if not previously matched
-     * @throws HttpException if an HTTP exception occurred
-     */
-    private HttpRoute getPreviouslyMatchedRoute(HttpHost host, HttpRequest request, HttpContext context)
-            throws HttpException {
-        final String hostname = host.getHostName();
-
-        if (matchedHostnameExclusions.containsKey(hostname)) {
-            // matched earlier
-            if (matchedHostnameExclusions.get(hostname)) {
-                return new HttpRoute(host);
-            } else {
-                // get proxy route
-                return super.determineRoute(host, request, context);
+                return null;
             }
         } else {
-            // not matched
-            return null;
+            for (final Pattern hostnamePattern : excludedHostnames) {
+                if (hostnamePattern.matcher(hostname).matches()) {
+                    // exclude from proxy in the future
+                    matchedExcludedHostnames.put(hostname, true);
+                    // bypass proxy
+                    return null;
+                }
+            }
+
+            // use proxy in the future
+            matchedExcludedHostnames.put(hostname, false);
         }
+
+        //use proxy
+        return super.determineProxy(target, request, context);
     }
 }
