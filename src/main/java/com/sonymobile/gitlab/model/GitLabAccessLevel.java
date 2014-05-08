@@ -49,7 +49,7 @@ public enum GitLabAccessLevel {
 
     /** The unique ID. */
     private final int id;
-
+    
     /** Access levels by name. */
     public static final String[] all = {OWNER.name, MASTER.name, DEVELOPER.name, REPORTER.name, GUEST.name};
 
@@ -81,5 +81,23 @@ public enum GitLabAccessLevel {
             }
         }
         throw new IllegalArgumentException("Invalid access level ID");
+    }
+    
+    /**
+     * Returns the access level with the given name.
+     * 
+     * The method doesn't take upper or lower case into consideration.
+     * 
+     * @param name the name
+     * @return a GitLab access level
+     */
+    public static GitLabAccessLevel getAccessLevelWithName(String name) {
+        name = name.toUpperCase();
+        for (GitLabAccessLevel accessLevel : GitLabAccessLevel.values()) {
+            if (name.equals(accessLevel.name())) {
+                return accessLevel;
+            }
+        }
+        throw new IllegalArgumentException("Invalid access level name"); 
     }
 }
