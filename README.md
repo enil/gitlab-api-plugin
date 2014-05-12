@@ -174,6 +174,32 @@ This can also be done from the command line when running your application:
 
     java -Dhttp.proxyHost=proxyhost -Dhttp.proxyPort=8080 MyApplication
 
+#### Proxy credentials
+
+The proxy credentials can be set with the
+`GitLabApiClient(host, privateToken, proxyHost, proxyPort, proxyUser, proxyPassword)` constructor:
+
+    GitLabApiClient client = new GitLabApiClient("http://demo.gitlab.com", "Wvjy2Krpb7y8xi93owUz", "proxyhost", 8080,
+        "username", "password");
+
+The same constructor can be used with `null` for `proxyUser` and `proxyPassword` if credentials are not used.
+
+#### Non-proxy hosts
+
+Hosts to exclude from the proxy can be specified with the `GitLabApiClient(host, privateToken, proxyHost, proxyPort,
+proxyUser, proxyPassword, excludedHostnames)` constructor where `excludedHostnames` is a `List` of hostname `Pattern`s
+ to exclude:
+
+    List<Pattern> nonProxyHosts = new ArrayList<Pattern>();
+    nonProxyHosts.add(Pattern.compile("localhost"));
+    nonProxyHosts.add(Pattern.compile("127\.0\.0\.[0-9]+"));
+    nonProxyHosts.add(Pattern.compile("[^.]\.example\.net");
+
+    GitLabApiClient client = new GitLabApiClient("http://demo.gitlab.com", "Wvjy2Krpb7y8xi93owUz", "proxyhost", 8080,
+            "username", "password", nonProxyHosts);
+
+Again, `proxyUser` and `proxyPassword` can be `null` if proxy credentials are not used.
+
 [GitLab]:       https://www.gitlab.com/
 [session]:      http://api.gitlab.org/session.html
 [listusers]:    http://doc.gitlab.com/ce/api/users.html#list-users
