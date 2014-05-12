@@ -38,12 +38,18 @@ import com.sonymobile.gitlab.exceptions.GitLabApiException;
 import com.sonymobile.gitlab.exceptions.GroupNotFoundException;
 import com.sonymobile.gitlab.exceptions.NotFoundException;
 import com.sonymobile.gitlab.exceptions.UserNotFoundException;
+import com.sonymobile.gitlab.http.PatternProxyRoutePlanner;
 import com.sonymobile.gitlab.model.FullGitLabUserInfo;
 import com.sonymobile.gitlab.model.GitLabGroupInfo;
 import com.sonymobile.gitlab.model.GitLabGroupMemberInfo;
 import com.sonymobile.gitlab.model.GitLabSessionInfo;
 import com.sonymobile.gitlab.model.GitLabUserInfo;
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -52,8 +58,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static com.sonymobile.gitlab.helpers.JSONArrayIterator.iterator;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * A client for communicating with a GitLab API.
@@ -76,14 +84,25 @@ public class GitLabApiClient {
     /** The private token used to authenticate the connection. */
     private final String privateToken;
 
-    /** The used proxy host (or null if proxy is not used). */
+    /** The proxy host name (or null if proxy is not used). */
     private final String proxyHost;
 
-    /** The used proxy port. */
+    /** The proxy port. */
     private final int proxyPort;
 
+    /** The proxy user (or null if proxy credentials are not used). */
+    private final String proxyUser;
+
+    /** The proxy password (or null if proxy credentials are not used). */
+    private final String proxyPassword;
+
+    /** The hosts excluded from the proxy (or null if no exclusions are used). */
+    private final List<Pattern> excludedHostnames;
+
     /**
-     * Creates a GitLab API client.
+     * The
+     *
+     * /** Creates a GitLab API client.
      *
      * @param host         the URL of the host server (excluding the path)
      * @param privateToken the private token used to authenticate the connection
@@ -98,14 +117,53 @@ public class GitLabApiClient {
      *
      * @param host         the URL of the host server (excluding the path)
      * @param privateToken the private token used to authenticate the connection
-     * @param proxyHost    the used proxy host
-     * @param proxyPort    the used proxy port
+     * @param proxyHost    the proxy host name
+     * @param proxyPort    the proxy port
      */
     public GitLabApiClient(final String host, final String privateToken, final String proxyHost, final int proxyPort) {
+        // initialize without proxy credentials
+        this(host, privateToken, proxyHost, proxyPort, null, null);
+    }
+
+    /**
+     * Creates a GitLab API client connecting using a proxy server with credentials.
+     *
+     * @param host          the URL of the host server (excluding the path)
+     * @param privateToken  the private token used to authenticate the connection
+     * @param proxyHost     the proxy host name
+     * @param proxyPort     the proxy port
+     * @param proxyUser     the proxy user
+     * @param proxyPassword the proxy password
+     */
+    public GitLabApiClient(String host, String privateToken,
+                           String proxyHost, int proxyPort,
+                           String proxyUser, String proxyPassword) {
+        this(host, privateToken, proxyHost, proxyPort, proxyUser, proxyPassword, null);
+    }
+
+    /**
+     * Creates a GitLab API client connecting using a proxy server with credentials and a list of hosts excluded from
+     * the proxy.
+     *
+     * @param host              the URL of the host server (excluding the path)
+     * @param privateToken      the private token used to authenticate the connection
+     * @param proxyHost         the proxy host name
+     * @param proxyPort         the proxy port
+     * @param proxyUser         the proxy user
+     * @param proxyPassword     the proxy password
+     * @param excludedHostnames the excluded hosts
+     */
+    public GitLabApiClient(String host, String privateToken,
+                           String proxyHost, int proxyPort,
+                           String proxyUser, String proxyPassword,
+                           List<Pattern> excludedHostnames) {
         this.host = host;
         this.privateToken = privateToken;
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
+        this.proxyUser = proxyUser;
+        this.proxyPassword = proxyPassword;
+        this.excludedHostnames = excludedHostnames;
 
         // create the HTTP client used by Unirest
         initializeHttpClient();
@@ -136,8 +194,8 @@ public class GitLabApiClient {
      * @param host      the URL of the host server (excluding the path)
      * @param login     the username of the user
      * @param password  the password of the user
-     * @param proxyHost the used proxy host
-     * @param proxyPort the used proxy port
+     * @param proxyHost the proxy host name
+     * @param proxyPort the proxy port
      * @return a GitLab API client
      * @throws GitLabApiException if the request failed
      */
@@ -149,6 +207,33 @@ public class GitLabApiClient {
                 password);
         // use token from session to create a client
         return new GitLabApiClient(host, session.getPrivateToken(), proxyHost, proxyPort);
+    }
+
+    /**
+     * Tests if a connection can be established with the given parameters.
+     *
+     * @param host              the URL of the host server (excluding the path)
+     * @param privateToken      the private token used to authenticate the connection
+     * @param proxyHost         the proxy host name
+     * @param proxyPort         the proxy port
+     * @param proxyUser         the proxy user
+     * @param proxyPassword     the proxy password
+     * @param excludedHostnames the excluded hosts
+     * @throws GitLabApiException if the request failed
+     */
+    public static void testConnection(String host, String privateToken,
+                                      String proxyHost, int proxyPort,
+                                      String proxyUser, String proxyPassword,
+                                      List<Pattern> excludedHostnames)
+            throws GitLabApiException {
+        new GitLabApiClient(
+                host,
+                privateToken,
+                proxyHost,
+                proxyPort,
+                proxyUser,
+                proxyPassword,
+                excludedHostnames).getCurrentUser();
     }
 
     /**
@@ -288,7 +373,7 @@ public class GitLabApiClient {
     /**
      * Returns the URL of the host server.
      *
-     * @return an URL
+     * @return the URL
      */
     public String getHost() {
         return host;
@@ -297,7 +382,7 @@ public class GitLabApiClient {
     /**
      * Returns the private token.
      *
-     * @return a private token
+     * @return the private token
      */
     public String getPrivateToken() {
         return privateToken;
@@ -306,7 +391,7 @@ public class GitLabApiClient {
     /**
      * Returns the URL of the proxy.
      *
-     * @return a URL or null if not set
+     * @return the URL or null if not set
      */
     public String getProxyHost() {
         return proxyHost;
@@ -315,10 +400,37 @@ public class GitLabApiClient {
     /**
      * Returns the port of the proxy.
      *
-     * @return a port number
+     * @return the port number
      */
     public int getProxyPort() {
         return proxyPort;
+    }
+
+    /**
+     * Returns the proxy user.
+     *
+     * @return the user
+     */
+    public String getProxyUser() {
+        return proxyUser;
+    }
+
+    /**
+     * Returns the proxy password.
+     *
+     * @return the password
+     */
+    public String getProxyPassword() {
+        return proxyPassword;
+    }
+
+    /**
+     * Returns the excluded hosts.
+     *
+     * @return a list of hostname patterns
+     */
+    public List<Pattern> getExcludedHostnames() {
+        return unmodifiableList(excludedHostnames);
     }
 
     /**
@@ -328,20 +440,6 @@ public class GitLabApiClient {
      */
     private String getApiUrl() {
         return host + "/api/v3";
-    }
-
-    /**
-     * Tests if a connection can be established with the given parameters.
-     *
-     * @param host         the GitLab host URL
-     * @param privateToken the GitLab private token
-     * @param proxyHost    the http proxy host
-     * @param proxyPort    the http proxy port
-     * @throws GitLabApiException if the request failed
-     */
-    public static void testConnection(String host, String privateToken, String proxyHost, int proxyPort)
-            throws GitLabApiException {
-        new GitLabApiClient(host, privateToken, proxyHost, proxyPort).getCurrentUser();
     }
 
     /**
@@ -364,7 +462,23 @@ public class GitLabApiClient {
         final HttpClientBuilder builder = HttpClientBuilder.create().useSystemProperties();
         // override proxy settings if the proxy host is set
         if (proxyHost != null) {
-            builder.setProxy(new HttpHost(proxyHost, proxyPort));
+            HttpHost proxy = new HttpHost(proxyHost, proxyPort);
+
+            builder.setProxy(proxy);
+
+            // use proxy credentials if proxy user is set
+            if (proxyUser != null) {
+                CredentialsProvider proxyCredentialsProvider = new BasicCredentialsProvider();
+                Credentials proxyCredentials = new UsernamePasswordCredentials(proxyUser, proxyPassword);
+                proxyCredentialsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), proxyCredentials);
+
+                builder.setDefaultCredentialsProvider(proxyCredentialsProvider);
+            }
+
+            // exclude hosts if excluded hosts lists is set
+            if (excludedHostnames != null) {
+                builder.setRoutePlanner(new PatternProxyRoutePlanner(proxy, excludedHostnames));
+            }
         }
 
         Unirest.setHttpClient(builder.build());
