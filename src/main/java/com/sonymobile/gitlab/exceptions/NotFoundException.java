@@ -1,7 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Sony Mobile Communications AB. All rights reserved.
+ * Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB.
+ * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,27 +26,22 @@
 package com.sonymobile.gitlab.exceptions;
 
 /**
- * An exception indicating that authentication against the API failed.
+ * An exception indicating that the requested resource wasn't found by the API.
  *
  * @author Emil Nilsson
  */
-public class AuthenticationFailedException extends GitLabApiException {
+public class NotFoundException extends GitLabApiException {
     /**
-     * Creates an authentication failure exception with a message.
-     *
-     * @param message the reason for the exception
+     * @see GitLabApiException#GitLabApiException(String)
      */
-    public AuthenticationFailedException(String message) {
+    public NotFoundException(String message) {
         super(message);
     }
 
     /**
-     * Creates an authentication failure exception with a message and cause.
-     *
-     * @param message the reason for the exception
-     * @param cause   the exception causing the authentication failure exception
+     * @see GitLabApiException#GitLabApiException(String, Throwable)
      */
-    public AuthenticationFailedException(String message, Throwable cause) {
+    public NotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 }

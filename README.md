@@ -6,7 +6,8 @@ A client for [GitLab][] REST API written in Java.
 
 > The MIT License (MIT)
 >
-> Copyright (c) 2014 Sony Mobile Communications AB. All rights reserved.
+> Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB.
+> All rights reserved.
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy
 > of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +29,7 @@ A client for [GitLab][] REST API written in Java.
 
 ## Limitations
 
-The client can currently only get data from the API.
+The client can currently only read data from the API and not make any changes.
 
 ## Installation
 
@@ -38,7 +39,7 @@ gitlab-api-client is simple to install with maven, just add the following lines 
         <dependency>
             <groupId>com.sonymobile.gitlab</groupId>
             <artifactId>gitlab-api-client</artifactId>
-            <version>0.1</version>
+            <version>0.2</version>
         </dependency>
     </dependencies>
 
@@ -53,7 +54,14 @@ The constructor `GitLabApiClient(host, privateToken)` sets up the client using a
 
 Use the static method `openSession(host, login, password)` to connect with user's login name and password:
 
-    GitLabApiClient client = new GitLabApiClient("http://demo.gitlab.com", "jsmith", "123456");
+    GitLabApiClient client = GitLabApiClient.openSession("http://demo.gitlab.com", "jsmith", "123456");
+
+It is possible to temporarily assume the identity of another user with the method `impersonate(privateToken)` using the
+private token of that user:
+
+    // prints the name of the user with the provided private token
+    System.out.println(client.impersonate("Wvjy2Krpb7y8xi93owUz").getCurrentUser().getName());
+    // prints "John Smith"
 
 ### Session
 
@@ -61,13 +69,89 @@ It is possible to explicitly fetch a session using `getSession(login, password)`
  to using the static `openSession(host, login, password)` method:
 
     // get a session for the user jsmith
-    GitLabSession session = client.getSession("jsmith", "123456");
+    GitLabSessionInfo session = client.getSession("jsmith", "123456");
 
     // print the user's token
-    System.out.println(session.getPrivateToken());
-    // prints "Wvjy2Krpb7y8xi93owUz"
+    System.out.println("Private token: " + session.getPrivateToken());
+    // prints "Private token: Wvjy2Krpb7y8xi93owUz"
 
-The session is fetching with a `POST` request to [/session][session].
+The session is fetched with a `POST` request to [/session][session].
+
+### User
+
+#### All users
+
+The method `getUsers()` can be used to fetch all users:
+
+    // print the name of all users
+    for (final GitLabUserInfo user : client.getUsers()) {
+        System.out.println(user.getName());
+    }
+
+The users are fetched with a `GET` request to [/users][listusers].
+
+#### Single User by ID
+
+To fetch just a single user by its user ID, use `getUser(userId)`:
+
+    GitLabUserInfo user = client.getUser(1);
+
+    // print the user's name
+    System.out.println("User: " + user.getName());
+    // prints "User: [username]
+
+If the user doesn't exist `getUser(userId)` will return `null`.
+
+The user is fetched with a `GET` request to [/users/:id][singleuser].
+
+#### Current user
+
+It is possible to retrieve the current user, e.g. the user the private token belongs to, using the `getCurrentUser()`
+method:
+
+    GitLabUserInfo user = client.getCurrentUser();
+
+    // print the user's name
+    System.out.println("Logged in user: " + user.getName());
+    // prints "Logged in user: [username]
+
+The current user is fetched with a `GET` request to [/user][currentuser].
+
+### Groups
+
+#### All groups
+
+The method `getGroups()` can be used to fetch all groups accessible to the current user (administrators have access to
+ all groups):
+
+    // print the ID and name of all groups
+    for (final GitLabGroupInfo group : client.getGroups()) {
+        System.out.println(group.getID() + ": " + group.getName());
+        // prints "1: [groupname]" and so on
+    }
+
+The groups are fetched with a `GET` request to [/groups][allgroups].
+
+#### Single group by ID
+
+The `getGroup(groupId)` method can be used to fetch a group by its group ID:
+
+    GitLabGroupInfo group = client.getGroup(1);
+    System.out.println(group.getID() + ": " + group.getName());
+    // prints "1: [groupname]"
+
+The group is fetched with a `GET` request to [/groups/:id][groupdetails].
+
+### Group members
+
+The method `getGroupMembers(groupId)` returns a list of all members of a group specified by its group ID:
+
+    // prints the names of all members of the group with ID 1
+    for (final GitLabGroupMemberInfo member : client.getGroupMembers(1)) {
+        System.out.println(member.getName());
+    }
+
+The group members are fetched with a `GET` request to [/groups/:id/members][groupmembers].
 
 ### Proxy
 
@@ -90,7 +174,38 @@ This can also be done from the command line when running your application:
 
     java -Dhttp.proxyHost=proxyhost -Dhttp.proxyPort=8080 MyApplication
 
+#### Proxy credentials
+
+The proxy credentials can be set with the
+`GitLabApiClient(host, privateToken, proxyHost, proxyPort, proxyUser, proxyPassword)` constructor:
+
+    GitLabApiClient client = new GitLabApiClient("http://demo.gitlab.com", "Wvjy2Krpb7y8xi93owUz", "proxyhost", 8080,
+        "username", "password");
+
+The same constructor can be used with `null` for `proxyUser` and `proxyPassword` if credentials are not used.
+
+#### Non-proxy hosts
+
+Hosts to exclude from the proxy can be specified with the `GitLabApiClient(host, privateToken, proxyHost, proxyPort,
+proxyUser, proxyPassword, excludedHostnames)` constructor where `excludedHostnames` is a `List` of hostname `Pattern`s
+ to exclude:
+
+    List<Pattern> nonProxyHosts = new ArrayList<Pattern>();
+    nonProxyHosts.add(Pattern.compile("localhost"));
+    nonProxyHosts.add(Pattern.compile("127\.0\.0\.[0-9]+"));
+    nonProxyHosts.add(Pattern.compile("[^.]\.example\.net");
+
+    GitLabApiClient client = new GitLabApiClient("http://demo.gitlab.com", "Wvjy2Krpb7y8xi93owUz", "proxyhost", 8080,
+            "username", "password", nonProxyHosts);
+
+Again, `proxyUser` and `proxyPassword` can be `null` if proxy credentials are not used.
 
 [GitLab]:       https://www.gitlab.com/
 [session]:      http://api.gitlab.org/session.html
+[listusers]:    http://doc.gitlab.com/ce/api/users.html#list-users
+[singleuser]:   http://doc.gitlab.com/ce/api/users.html#single-user
+[currentuser]:  http://doc.gitlab.com/ce/api/users.html#current-user
+[allgroups]:    http://doc.gitlab.com/ce/api/groups.html#list-project-groups
+[groupdetails]: http://doc.gitlab.com/ce/api/groups.html#details-of-a-group
+[groupmembers]: http://doc.gitlab.com/ce/api/groups.html#list-group-members
 [javaproxy]:    http://docs.oracle.com/javase/6/docs/technotes/guides/net/proxies.html

@@ -1,7 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Sony Mobile Communications AB. All rights reserved.
+ * Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB.
+ * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,100 +23,137 @@
  * THE SOFTWARE.
  */
 
-package com.sonymobile.gitlab;
+package com.sonymobile.gitlab.model;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 /**
- * A GitLab user.
+ * The most basic information about a GitLab user.
  *
  * @author Emil Nilsson
  */
-public class GitLabUser {
+public abstract class BasicGitLabUserInfo {
+    /** A date formatter for parsing the date of creation. */
+    private static final DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+    static {
+        // interpret all dates as UTC dates
+        DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
     /** The user ID. */
     private final int id;
+
     /** The username. */
     private final String username;
+
     /** The email address. */
     private final String email;
+
     /** The name. */
     private final String name;
-    /** Whether the user is blocked. */
-    private final boolean isBlocked;
+
+
+    /** Whether the user account is active. */
+    private final boolean isActive;
+
+    /** The date of creation. */
+    private final Date createdAt;
 
     /**
-     * Creates a user from a JSON object.
+     * Creates a user info object from a JSON object.
      *
-     * A user object can either be created from a session JSON object or a user JSON object.
-     *
-     * @param jsonObject the JSON object
+     * @param jsonObject a JSON object to derive the information from
      */
-    public GitLabUser(JSONObject jsonObject) {
+    public BasicGitLabUserInfo(JSONObject jsonObject) {
         try {
             id = jsonObject.getInt("id");
             username = jsonObject.getString("username");
             email = jsonObject.getString("email");
             name = jsonObject.getString("name");
-            // sessions objects use key "blocked", user objects use "state"
-            if (jsonObject.has("blocked")) {
-                isBlocked = jsonObject.getBoolean("blocked");
-            } else {
-                isBlocked = jsonObject.getString("state").equals("blocked");
-            }
+            isActive = jsonObject.getString("state").equals("active");
+            createdAt = DATE_FORMATTER.parse(jsonObject.getString("created_at"));
         } catch (JSONException e) {
             // failed to retrieve a value
             throw new IllegalArgumentException("Malformed JSON object", e);
+        } catch (ParseException e) {
+            // failed to parse the date of creation
+            throw new IllegalArgumentException("Malformed date");
         }
     }
 
     /**
-     * Returns the user ID.
+     * Gets the user ID.
      *
      * @return a user ID
      */
-    public int getId() {
+    public final int getId() {
         return id;
     }
 
     /**
-     * Returns the username of the user.
+     * Gets the username.
      *
      * @return a username
      */
-    public String getUsername() {
+    public final String getUsername() {
         return username;
     }
 
     /**
-     * Returns the email address of the user.
+     * Gets the email address.
      *
      * @return an email address
      */
-    public String getEmail() {
+    public final String getEmail() {
         return email;
     }
 
     /**
-     * Returns the name of the user.
+     * Gets the name.
      *
      * @return a name
      */
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
     /**
-     * Returns whether the user is blocked.
+     * Gets the date of the creation of the user account.
      *
-     * @return true if the user is blocked
+     * @return a date
      */
-    public boolean isBlocked() {
-        return isBlocked;
+    public final Date getCreatedAtDate() {
+        return createdAt;
+    }
+
+    /**
+     * Checks whether the user account is active.
+     *
+     * @return true if active
+     */
+    public final boolean isActive() {
+        return isActive;
+    }
+
+    /**
+     * Checks whether the user is blocked.
+     *
+     * @return true if blocked
+     */
+    public final boolean isBlocked() {
+        return !isActive();
     }
 
     @Override
-    public String toString() {
-        return getName();
+    public final String toString() {
+        return getUsername();
     }
 }

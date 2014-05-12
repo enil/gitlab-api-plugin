@@ -1,7 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Sony Mobile Communications AB. All rights reserved.
+ * Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB.
+ * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +23,31 @@
  * THE SOFTWARE.
  */
 
-package com.sonymobile.gitlab;
+package com.sonymobile.gitlab.model;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * A GitLab session.
+ * Information about a session for a GitLab user.
+ *
+ * Contains information about the user and the private token.
  *
  * @author Emil Nilsson
  */
-public class GitLabSession {
-    /** The private token. */
+public final class GitLabSessionInfo extends GitLabUserInfo {
+    /** The private token of the user. */
     private final String privateToken;
-    /** The user. */
-    private final GitLabUser user;
 
     /**
-     * Creates a session from a JSON object.
+     * Creates session information from a JSON object.
      *
-     * @param jsonObject the JSON object
+     * @param jsonObject a JSON object to derive the information from
      */
-    public GitLabSession(JSONObject jsonObject) {
+    public GitLabSessionInfo(JSONObject jsonObject) {
+        super(jsonObject);
         try {
             privateToken = jsonObject.getString("private_token");
-            // create a user object using the same JSON object
-            user = new GitLabUser(jsonObject);
         } catch (JSONException e) {
             // failed to retrieve a value
             throw new IllegalArgumentException("Malformed JSON object", e);
@@ -55,65 +55,11 @@ public class GitLabSession {
     }
 
     /**
-     * Returns the user ID.
+     * Gets the private token for the session.
      *
-     * @return a user ID
-     */
-    public int getId() {
-        return user.getId();
-    }
-
-    /**
-     * Returns the username of the user.
-     *
-     * @return a username
-     */
-    public String getUsername() {
-        return user.getUsername();
-    }
-
-    /**
-     * Returns the email address of the user.
-     *
-     * @return an email address
-     */
-    public String getEmail() {
-        return user.getEmail();
-    }
-
-    /**
-     * Returns the name of the user.
-     *
-     * @return a name
-     */
-    public String getName() {
-        return user.getName();
-    }
-
-    /**
-     * Returns whether the user is blocked.
-     *
-     * @return true if the user is blocked
-     */
-    public boolean isBlocked() {
-        return user.isBlocked();
-    }
-
-    /**
-     * Returns the private token for the user.
-     *
-     * @return a private token
+     * @return the private token
      */
     public String getPrivateToken() {
         return privateToken;
-    }
-
-    /**
-     * Returns the user of the session.
-     *
-     * @return a user object for the user
-     */
-    public GitLabUser getUser() {
-        return user;
     }
 }

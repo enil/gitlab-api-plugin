@@ -1,7 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Sony Mobile Communications AB. All rights reserved.
+ * Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB.
+ * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,27 +26,29 @@
 package com.sonymobile.gitlab.exceptions;
 
 /**
- * An exception indicating that authentication against the API failed.
+ * Any exception thrown by the API client.
+ *
+ * This can be used as a catch-all when communicating with a GitLab API.
  *
  * @author Emil Nilsson
  */
-public class AuthenticationFailedException extends GitLabApiException {
+public class GitLabApiException extends Exception {
     /**
-     * Creates an authentication failure exception with a message.
+     * Creates an exception with a message.
      *
-     * @param message the reason for the exception
+     * @param message the message
      */
-    public AuthenticationFailedException(String message) {
+    public GitLabApiException(String message) {
         super(message);
     }
 
     /**
-     * Creates an authentication failure exception with a message and cause.
+     * Creates an exception with a message an another exception as a cause.
      *
-     * @param message the reason for the exception
-     * @param cause   the exception causing the authentication failure exception
+     * @param message the message
+     * @param cause   the other exception
      */
-    public AuthenticationFailedException(String message, Throwable cause) {
+    public GitLabApiException(String message, Throwable cause) {
         super(message, cause);
     }
 }

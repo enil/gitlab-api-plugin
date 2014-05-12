@@ -1,7 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Sony Mobile Communications AB. All rights reserved.
+ * Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB.
+ * All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,30 +23,41 @@
  * THE SOFTWARE.
  */
 
-package com.sonymobile.gitlab.exceptions;
+package com.sonymobile.gitlab.model;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
- * An exception indicating that authentication against the API failed.
+ * Complete information about a GitLab user.
  *
  * @author Emil Nilsson
  */
-public class AuthenticationFailedException extends GitLabApiException {
+public abstract class GitLabUserInfo extends BasicGitLabUserInfo {
+    /** Whether the user is an administrator. */
+    private final boolean isAdmin;
+
     /**
-     * Creates an authentication failure exception with a message.
+     * Creates a user info object from a JSON object.
      *
-     * @param message the reason for the exception
+     * @param jsonObject a JSON object to derive the information from
      */
-    public AuthenticationFailedException(String message) {
-        super(message);
+    protected GitLabUserInfo(JSONObject jsonObject) {
+        super(jsonObject);
+        try {
+            isAdmin = jsonObject.getBoolean("is_admin");
+        } catch (JSONException e) {
+            // failed to retrieve a value
+            throw new IllegalArgumentException("Malformed JSON object", e);
+        }
     }
 
     /**
-     * Creates an authentication failure exception with a message and cause.
+     * Checks whether the user is an administrator.
      *
-     * @param message the reason for the exception
-     * @param cause   the exception causing the authentication failure exception
+     * @return true if administrator
      */
-    public AuthenticationFailedException(String message, Throwable cause) {
-        super(message, cause);
+    public final boolean isAdmin() {
+        return isAdmin;
     }
 }
