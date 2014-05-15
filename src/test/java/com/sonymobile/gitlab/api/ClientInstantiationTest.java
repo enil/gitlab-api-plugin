@@ -118,24 +118,4 @@ public class ClientInstantiationTest extends AbstractClientTest {
         assertThat(newClient.getPrivateToken(), is("0123456789abcdef"));
         assertThat(newClient.getProxyHost(), is(nullValue()));
     }
-
-    /**
-     * Tests creating a new instance by assuming the identity of another user.
-     */
-    @Test
-    public void createInstanceByImpersonatingUser() {
-        GitLabApiClient oldClient = new GitLabApiClient(
-                "http://gitlab.example.org",
-                "0123456789abcdef",
-                "http://proxy",
-                1234);
-
-        // assume the identity of another user
-        GitLabApiClient newClient = oldClient.impersonate("9876543210abcdef");
-
-        assertThat(newClient.getHost(), is("http://gitlab.example.org"));
-        assertThat(newClient.getPrivateToken(), is("9876543210abcdef"));
-        assertThat(newClient.getProxyHost(), is("http://proxy"));
-        assertThat(newClient.getProxyPort(), is(1234));
-    }
 }

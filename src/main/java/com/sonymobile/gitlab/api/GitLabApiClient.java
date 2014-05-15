@@ -107,7 +107,7 @@ public class GitLabApiClient {
      * @param host         the URL of the host server (excluding the path)
      * @param privateToken the private token used to authenticate the connection
      */
-    public GitLabApiClient(final String host, final String privateToken) {
+    public GitLabApiClient(String host, String privateToken) {
         // initialize without a proxy
         this(host, privateToken, null, 0);
     }
@@ -120,7 +120,7 @@ public class GitLabApiClient {
      * @param proxyHost    the proxy host name
      * @param proxyPort    the proxy port
      */
-    public GitLabApiClient(final String host, final String privateToken, final String proxyHost, final int proxyPort) {
+    public GitLabApiClient(String host, String privateToken, String proxyHost, int proxyPort) {
         // initialize without proxy credentials
         this(host, privateToken, proxyHost, proxyPort, null, null);
     }
@@ -180,7 +180,7 @@ public class GitLabApiClient {
      * @return a GitLab API client
      * @throws GitLabApiException if the request failed
      */
-    public static GitLabApiClient openSession(final String host, final String login, final String password)
+    public static final GitLabApiClient openSession(String host, String login, String password)
             throws GitLabApiException {
         // open session without setting a proxy
         return openSession(host, login, password, null, 0);
@@ -199,8 +199,9 @@ public class GitLabApiClient {
      * @return a GitLab API client
      * @throws GitLabApiException if the request failed
      */
-    public static GitLabApiClient openSession(final String host, final String login, final String password,
-                                              final String proxyHost, final int proxyPort)
+    public static final GitLabApiClient openSession(String host,
+                                                    String login, String password,
+                                                    String proxyHost, int proxyPort)
             throws GitLabApiException {
         // connect to API and create a session with the user credentials
         final GitLabSessionInfo session = new GitLabApiClient(host, null, proxyHost, proxyPort).getSession(login,
@@ -221,10 +222,10 @@ public class GitLabApiClient {
      * @param excludedHostnames the excluded hosts
      * @throws GitLabApiException if the request failed
      */
-    public static void testConnection(String host, String privateToken,
-                                      String proxyHost, int proxyPort,
-                                      String proxyUser, String proxyPassword,
-                                      List<Pattern> excludedHostnames)
+    public static final void testConnection(String host, String privateToken,
+                                            String proxyHost, int proxyPort,
+                                            String proxyUser, String proxyPassword,
+                                            List<Pattern> excludedHostnames)
             throws GitLabApiException {
         new GitLabApiClient(
                 host,
@@ -244,7 +245,7 @@ public class GitLabApiClient {
      * @return a session object
      * @throws GitLabApiException if the request failed
      */
-    public GitLabSessionInfo getSession(final String login, final String password)
+    public final GitLabSessionInfo getSession(String login, String password)
             throws GitLabApiException {
         final Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("login", login);
@@ -262,7 +263,7 @@ public class GitLabApiClient {
      * @return a list of groups
      * @throws GitLabApiException if the request failed
      */
-    public List<GitLabGroupInfo> getGroups()
+    public final List<GitLabGroupInfo> getGroups()
             throws GitLabApiException {
         // get the json array with the groups from the response
         JSONArray jsonArray = get("/groups", null).getBody().getArray();
@@ -283,7 +284,7 @@ public class GitLabApiClient {
      * @return the group
      * @throws GitLabApiException if the request failed or if the group is missing
      */
-    public GitLabGroupInfo getGroup(int groupId)
+    public final GitLabGroupInfo getGroup(int groupId)
             throws GitLabApiException {
         try {
             // create a group object with the response
@@ -300,7 +301,7 @@ public class GitLabApiClient {
      * @return the members of the group
      * @throws GitLabApiException if the request failed or if the group is missing
      */
-    public List<GitLabGroupMemberInfo> getGroupMembers(int groupId)
+    public final List<GitLabGroupMemberInfo> getGroupMembers(int groupId)
             throws GitLabApiException {
         JSONArray jsonArray;
         try {
@@ -325,7 +326,7 @@ public class GitLabApiClient {
      * @return a list of all users
      * @throws GitLabApiException if the request failed
      */
-    public List<GitLabUserInfo> getUsers()
+    public final List<GitLabUserInfo> getUsers()
             throws GitLabApiException {
         // get the json array with the users from the response
         JSONArray jsonArray = get("/users", null).getBody().getArray();
@@ -347,7 +348,7 @@ public class GitLabApiClient {
      * @return the authenticated user
      * @throws GitLabApiException if the request failed
      */
-    public GitLabUserInfo getCurrentUser()
+    public final GitLabUserInfo getCurrentUser()
             throws GitLabApiException {
         // create a user object with the response
         return new FullGitLabUserInfo(get("/user", null).getBody().getObject());
@@ -360,7 +361,7 @@ public class GitLabApiClient {
      * @return the user
      * @throws GitLabApiException if the request failed
      */
-    public GitLabUserInfo getUser(int userId)
+    public final GitLabUserInfo getUser(int userId)
             throws GitLabApiException {
         try {
             // create a user object with the response
@@ -375,7 +376,7 @@ public class GitLabApiClient {
      *
      * @return the URL
      */
-    public String getHost() {
+    public final String getHost() {
         return host;
     }
 
@@ -384,7 +385,7 @@ public class GitLabApiClient {
      *
      * @return the private token
      */
-    public String getPrivateToken() {
+    public final String getPrivateToken() {
         return privateToken;
     }
 
@@ -393,7 +394,7 @@ public class GitLabApiClient {
      *
      * @return the URL or null if not set
      */
-    public String getProxyHost() {
+    public final String getProxyHost() {
         return proxyHost;
     }
 
@@ -402,7 +403,7 @@ public class GitLabApiClient {
      *
      * @return the port number
      */
-    public int getProxyPort() {
+    public final int getProxyPort() {
         return proxyPort;
     }
 
@@ -411,7 +412,7 @@ public class GitLabApiClient {
      *
      * @return the user
      */
-    public String getProxyUser() {
+    public final String getProxyUser() {
         return proxyUser;
     }
 
@@ -420,7 +421,7 @@ public class GitLabApiClient {
      *
      * @return the password
      */
-    public String getProxyPassword() {
+    public final String getProxyPassword() {
         return proxyPassword;
     }
 
@@ -429,7 +430,7 @@ public class GitLabApiClient {
      *
      * @return a list of hostname patterns
      */
-    public List<Pattern> getExcludedHostnames() {
+    public final List<Pattern> getExcludedHostnames() {
         return unmodifiableList(excludedHostnames);
     }
 
@@ -438,18 +439,25 @@ public class GitLabApiClient {
      *
      * @return an URL
      */
-    private String getApiUrl() {
+    private final String getApiUrl() {
         return host + "/api/v3";
     }
 
     /**
-     * Creates a new client assuming the identity of another user.
+     * Returns a client impersonating another user.
      *
-     * @param privateToken a private token for the other user
-     * @return a new API client
+     * The returned client will have the same access as the impersonated user.
+     *
+     * @param userId the user ID of the impersonated user
+     * @return a API client for the impersonated user
      */
-    public GitLabApiClient impersonate(String privateToken) {
-        return new GitLabApiClient(host, privateToken, proxyHost, proxyPort);
+    public final GitLabApiClient asUser(int userId) {
+        return new ImpersonatingGitLabApiClient(
+                userId,
+                host, privateToken,
+                proxyHost, proxyPort,
+                proxyUser, proxyPassword,
+                excludedHostnames);
     }
 
     /**
@@ -457,7 +465,7 @@ public class GitLabApiClient {
      *
      * If a proxy is specified this will be used for the client.
      */
-    private void initializeHttpClient() {
+    protected void initializeHttpClient() {
         // use proxy settings etc from system properties
         final HttpClientBuilder builder = HttpClientBuilder.create().useSystemProperties();
         // override proxy settings if the proxy host is set
@@ -494,7 +502,7 @@ public class GitLabApiClient {
      * @throws AuthenticationFailedException if the private token is incorrect
      * @throws NotFoundException             if the resource wasn't found
      */
-    private HttpResponse<JsonNode> get(String path, Map<String, Object> fields)
+    protected final HttpResponse<JsonNode> get(String path, Map<String, Object> fields)
             throws ApiConnectionFailureException, AuthenticationFailedException, NotFoundException {
         // include private token in request
         return get(path, fields, true);
@@ -511,7 +519,7 @@ public class GitLabApiClient {
      * @throws AuthenticationFailedException if the private token is incorrect
      * @throws NotFoundException             if the resource wasn't found
      */
-    private HttpResponse<JsonNode> get(String path, Map<String, Object> fields, boolean includePrivateToken)
+    protected HttpResponse<JsonNode> get(String path, Map<String, Object> fields, boolean includePrivateToken)
             throws ApiConnectionFailureException, AuthenticationFailedException, NotFoundException {
         final GetRequest request = Unirest.get(getApiUrl() + path);
 
@@ -545,10 +553,12 @@ public class GitLabApiClient {
      * @param path   the path relative to the API
      * @param fields the fields for the request
      * @return an HTTP response containing a JSON body
-     * @throws GitLabApiException if the request failed
+     * @throws ApiConnectionFailureException if a connection to the API could not be found
+     * @throws AuthenticationFailedException if the private token is incorrect
+     * @throws NotFoundException             if the resource wasn't found
      */
-    private HttpResponse<JsonNode> post(String path, Map<String, Object> fields)
-            throws GitLabApiException {
+    protected final HttpResponse<JsonNode> post(String path, Map<String, Object> fields)
+            throws ApiConnectionFailureException, AuthenticationFailedException, NotFoundException {
         // include private token in request
         return post(path, fields, true);
     }
@@ -564,7 +574,7 @@ public class GitLabApiClient {
      * @throws AuthenticationFailedException if the private token is incorrect
      * @throws NotFoundException             if the resource wasn't found
      */
-    private HttpResponse<JsonNode> post(String path, Map<String, Object> fields, boolean includePrivateToken)
+    protected HttpResponse<JsonNode> post(String path, Map<String, Object> fields, boolean includePrivateToken)
             throws ApiConnectionFailureException, AuthenticationFailedException, NotFoundException {
         HttpRequestWithBody request = Unirest.post(getApiUrl() + path);
 
