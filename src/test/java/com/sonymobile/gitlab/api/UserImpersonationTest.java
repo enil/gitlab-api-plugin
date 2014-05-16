@@ -25,6 +25,8 @@
 
 package com.sonymobile.gitlab.api;
 
+import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
+import com.sonymobile.gitlab.exceptions.UserNotFoundException;
 import com.sonymobile.gitlab.model.GitLabSessionInfo;
 import com.sonymobile.gitlab.model.GitLabUserInfo;
 import org.junit.Before;
@@ -105,6 +107,22 @@ public class UserImpersonationTest extends AbstractClientTest {
     }
 
     /**
+     * Tests making a GET request impersonating a user which doesn't exist.
+     */
+    @Test
+    public void makeGetRequestForMissingUser() throws Exception {
+        // stub for expected request to get the current user
+        stubFor(get(urlEqualTo("/api/v3/user?sudo=1&private_token=" + PRIVATE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withBodyFile("api/v3/user_missing.json")));
+
+        thrown.expect(UserNotFoundException.class);
+
+        newClient.getCurrentUser();
+    }
+
+    /**
      * Tests making a POST request impersonating a user.
      */
     @Test
@@ -122,5 +140,24 @@ public class UserImpersonationTest extends AbstractClientTest {
         GitLabSessionInfo session = newClient.getSession("username", "password");
 
         assertThat(session.getId(), is(1));
+    }
+
+    /**
+     * Tests making a POST request impersonating a user which doesn't exist.
+     */
+    @Test
+    public void makePostRequestForMissingUser() throws Exception {
+        // stub for expected request to get a session
+        stubFor(post(urlEqualTo("/api/v3/session"))
+                .withRequestBody(containing("sudo=1"))
+                .withRequestBody(containing("login=username"))
+                .withRequestBody(containing("password=password"))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withBodyFile("api/v3/user_missing.json")));
+
+        thrown.expect(UserNotFoundException.class);
+
+        newClient.getSession("username", "password");
     }
 }

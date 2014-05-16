@@ -367,7 +367,7 @@ public class GitLabApiClient {
             // create a user object with the response
             return new FullGitLabUserInfo(get("/users/" + userId, null).getBody().getObject());
         } catch (NotFoundException e) {
-            throw new UserNotFoundException("A group with group ID " + userId + " does not exist");
+            throw new UserNotFoundException("A user with group ID " + userId + " does not exist");
         }
     }
 
@@ -461,7 +461,7 @@ public class GitLabApiClient {
     }
 
     /**
-     * Create the HTTP client.
+     * Creates the HTTP client.
      *
      * If a proxy is specified this will be used for the client.
      */
@@ -498,12 +498,10 @@ public class GitLabApiClient {
      * @param path   the path relative to the API
      * @param fields the fields for the request (can be null)
      * @return an HTTP response containing a JSON body
-     * @throws ApiConnectionFailureException if a connection to the API could not be found
-     * @throws AuthenticationFailedException if the private token is incorrect
-     * @throws NotFoundException             if the resource wasn't found
+     * @throws GitLabApiException if the request failed
      */
     protected final HttpResponse<JsonNode> get(String path, Map<String, Object> fields)
-            throws ApiConnectionFailureException, AuthenticationFailedException, NotFoundException {
+            throws GitLabApiException {
         // include private token in request
         return get(path, fields, true);
     }
@@ -515,12 +513,10 @@ public class GitLabApiClient {
      * @param fields              the fields for the request (can be null)
      * @param includePrivateToken if the private token should be added to the fields
      * @return an HTTP response containing a JSON body
-     * @throws ApiConnectionFailureException if a connection to the API could not be found
-     * @throws AuthenticationFailedException if the private token is incorrect
-     * @throws NotFoundException             if the resource wasn't found
+     * @throws GitLabApiException if the request failed
      */
     protected HttpResponse<JsonNode> get(String path, Map<String, Object> fields, boolean includePrivateToken)
-            throws ApiConnectionFailureException, AuthenticationFailedException, NotFoundException {
+            throws GitLabApiException {
         final GetRequest request = Unirest.get(getApiUrl() + path);
 
         request.fields(fields);
@@ -528,13 +524,25 @@ public class GitLabApiClient {
             request.field("private_token", privateToken);
         }
 
-        final HttpResponse<JsonNode> response;
         try {
-            response = request.asJson();
+            // make request
+            return processGetResponse(request.asJson());
         } catch (UnirestException e) {
             throw new ApiConnectionFailureException("Could not connect to API", e);
         }
+    }
 
+    /**
+     * Processes a GET response.
+     *
+     * Used by {@link #get(String, Map, boolean)} to handle the HTTP response.
+     *
+     * @param response the HTTP response object
+     * @return a response object if the request succeeded
+     * @throws GitLabApiException if the request failed
+     */
+    protected HttpResponse<JsonNode> processGetResponse(HttpResponse<JsonNode> response)
+            throws GitLabApiException {
         // check if the request was successful
         switch (response.getCode()) {
             case HTTP_200_OK:
@@ -558,24 +566,22 @@ public class GitLabApiClient {
      * @throws NotFoundException             if the resource wasn't found
      */
     protected final HttpResponse<JsonNode> post(String path, Map<String, Object> fields)
-            throws ApiConnectionFailureException, AuthenticationFailedException, NotFoundException {
+            throws GitLabApiException {
         // include private token in request
         return post(path, fields, true);
     }
 
     /**
-     * Make a POST request to the API.
+     * Makes a POST request to the API.
      *
      * @param path                the path relative to the API
      * @param fields              the fields for the request
      * @param includePrivateToken if the private token should be added to the fields
      * @return an HTTP response containing a JSON body
-     * @throws ApiConnectionFailureException if a connection to the API could not be found
-     * @throws AuthenticationFailedException if the private token is incorrect
-     * @throws NotFoundException             if the resource wasn't found
+     * @throws GitLabApiException if the request failed
      */
     protected HttpResponse<JsonNode> post(String path, Map<String, Object> fields, boolean includePrivateToken)
-            throws ApiConnectionFailureException, AuthenticationFailedException, NotFoundException {
+            throws GitLabApiException {
         HttpRequestWithBody request = Unirest.post(getApiUrl() + path);
 
         final MultipartBody body = request.fields(fields);
@@ -583,13 +589,25 @@ public class GitLabApiClient {
             body.field("private_token", privateToken);
         }
 
-        final HttpResponse<JsonNode> response;
         try {
-            response = request.asJson();
+            // make request
+            return processPostResponse(request.asJson());
         } catch (UnirestException e) {
             throw new ApiConnectionFailureException("Could not connect to API", e);
         }
+    }
 
+    /**
+     * Processes a POST response.
+     *
+     * Used by {@link #post(String, Map, boolean)} to handle the HTTP response.
+     *
+     * @param response the HTTP response object
+     * @return a response object if the request succeeded
+     * @throws GitLabApiException if the request failed
+     */
+    protected HttpResponse<JsonNode> processPostResponse(HttpResponse<JsonNode> response)
+            throws GitLabApiException {
         // check if the request was successful
         switch (response.getCode()) {
             case HTTP_201_CREATED:

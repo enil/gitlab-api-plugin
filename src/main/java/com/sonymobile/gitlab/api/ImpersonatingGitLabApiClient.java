@@ -27,9 +27,9 @@ package com.sonymobile.gitlab.api;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
-import com.sonymobile.gitlab.exceptions.ApiConnectionFailureException;
-import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
-import com.sonymobile.gitlab.exceptions.NotFoundException;
+import com.sonymobile.gitlab.exceptions.GitLabApiException;
+import com.sonymobile.gitlab.exceptions.UserNotFoundException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +42,9 @@ import java.util.regex.Pattern;
  * @author Emil Nilsson
  */
 /* package */ final class ImpersonatingGitLabApiClient extends GitLabApiClient {
+    /** Pattern to match error message if the impersonated user was not found. */
+    private final static Pattern USER_NOT_FOUND_MESSAGE = Pattern.compile("^404.* No user id or username for: .*");
+
     /** The user ID of the impersonated user. */
     private final int userId;
 
@@ -58,10 +61,10 @@ import java.util.regex.Pattern;
      * @param excludedHostnames the excluded hosts
      */
     /* package */ ImpersonatingGitLabApiClient(int userId,
-                                        String host, String privateToken,
-                                        String proxyHost, int proxyPort,
-                                        String proxyUser, String proxyPassword,
-                                        List<Pattern> excludedHostnames) {
+                                               String host, String privateToken,
+                                               String proxyHost, int proxyPort,
+                                               String proxyUser, String proxyPassword,
+                                               List<Pattern> excludedHostnames) {
         super(host, privateToken, proxyHost, proxyPort, proxyUser, proxyPassword, excludedHostnames);
         this.userId = userId;
     }
@@ -77,7 +80,7 @@ import java.util.regex.Pattern;
 
     @Override
     protected HttpResponse<JsonNode> get(String path, Map<String, Object> fields, boolean includePrivateToken)
-            throws ApiConnectionFailureException, AuthenticationFailedException, NotFoundException {
+            throws GitLabApiException {
         fields = (fields == null) ? new HashMap<String, Object>(1) : fields;
         // impersonate the user
         fields.put("sudo", getUserId());
@@ -85,11 +88,47 @@ import java.util.regex.Pattern;
     }
 
     @Override
+    protected HttpResponse<JsonNode> processGetResponse(HttpResponse<JsonNode> response)
+            throws GitLabApiException {
+        if (isUserNotFound(response)) {
+            throw new UserNotFoundException("A user with user ID " + userId + " does not exist");
+        } else {
+            return super.processGetResponse(response);
+        }
+    }
+
+    @Override
     protected HttpResponse<JsonNode> post(String path, Map<String, Object> fields, boolean includePrivateToken)
-            throws ApiConnectionFailureException, AuthenticationFailedException, NotFoundException {
+            throws GitLabApiException {
         fields = (fields == null) ? new HashMap<String, Object>(1) : fields;
         // impersonate the user
         fields.put("sudo", getUserId());
         return super.post(path, fields, includePrivateToken);
+    }
+
+    @Override
+    protected HttpResponse<JsonNode> processPostResponse(HttpResponse<JsonNode> response)
+            throws GitLabApiException {
+        if (isUserNotFound(response)) {
+            throw new UserNotFoundException("A user with user ID " + userId + " does not exist");
+        } else {
+            return super.processPostResponse(response);
+        }
+    }
+
+    /**
+     * Checks if the HTTP response indicates that the impersonated user wasn't found
+     *
+     * @param response the HTTP response
+     * @return true if the user wasn't found
+     */
+    private boolean isUserNotFound(HttpResponse<JsonNode> response) {
+        if (response.getCode() == 404) {
+            JSONObject responseObject = response.getBody().getObject();
+            if (responseObject.has("message")) {
+                return USER_NOT_FOUND_MESSAGE.matcher(responseObject.getString("message")).matches();
+            }
+        }
+        return false;
     }
 }
