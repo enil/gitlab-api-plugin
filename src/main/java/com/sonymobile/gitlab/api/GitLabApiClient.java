@@ -447,6 +447,7 @@ public class GitLabApiClient {
      * Returns a client impersonating another user.
      *
      * The returned client will have the same access as the impersonated user.
+     * Impersonating users is only possible when authenticated with the private token of an administrator user.
      *
      * @param userId the user ID of the impersonated user
      * @return a API client for the impersonated user
