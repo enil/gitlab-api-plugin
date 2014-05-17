@@ -63,11 +63,11 @@ public class ClientUserTest extends AbstractClientTest {
         assertThat(users, hasSize(3));
 
         GitLabUserInfo user = users.get(0);
-        assertThat(1, is(user.getId()));
-        assertThat("username", is(user.getUsername()));
-        assertThat("user@example.com", is(user.getEmail()));
-        assertThat("User Name", is(user.getName()));
-        assertThat(false, is(user.isBlocked()));
+        assertThat(user.getId(), is(1));
+        assertThat(user.getUsername(), is("username"));
+        assertThat(user.getEmail(), is("user@example.com"));
+        assertThat(user.getName(), is("User Name"));
+        assertThat(user.isBlocked(), is(false));
     }
 
     /**
@@ -100,11 +100,11 @@ public class ClientUserTest extends AbstractClientTest {
                         .withBodyFile("api/v3/users/1.json")));
 
         GitLabUserInfo user = client.getUser(1);
-        assertThat(1, is(user.getId()));
-        assertThat("username", is(user.getUsername()));
-        assertThat("user@example.com", is(user.getEmail()));
-        assertThat("User Name", is(user.getName()));
-        assertThat(false, is(user.isBlocked()));
+        assertThat(user.getId(), is(1));
+        assertThat(user.getUsername(), is("username"));
+        assertThat(user.getEmail(), is("user@example.com"));
+        assertThat(user.getName(), is("User Name"));
+        assertThat(user.isBlocked(), is(false));
     }
 
     /**
@@ -154,11 +154,11 @@ public class ClientUserTest extends AbstractClientTest {
                         .withBodyFile("api/v3/user.json")));
 
         GitLabUserInfo user = client.getCurrentUser();
-        assertThat(1, is(user.getId()));
-        assertThat("username", is(user.getUsername()));
-        assertThat("user@example.com", is(user.getEmail()));
-        assertThat("User Name", is(user.getName()));
-        assertThat(false, is(user.isBlocked()));
+        assertThat(user.getId(), is(1));
+        assertThat(user.getUsername(), is("username"));
+        assertThat(user.getEmail(), is("user@example.com"));
+        assertThat(user.getName(), is("User Name"));
+        assertThat(user.isBlocked(), is(false));
     }
 
     /**

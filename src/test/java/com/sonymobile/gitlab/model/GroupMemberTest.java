@@ -29,14 +29,9 @@ import com.sonymobile.gitlab.helpers.JsonFileLoader;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
+import static com.sonymobile.gitlab.helpers.DateHelpers.utcDate;
 import static com.sonymobile.gitlab.helpers.JsonFileLoader.jsonFile;
-import static java.util.Calendar.MILLISECOND;
 import static java.util.Calendar.NOVEMBER;
-import static org.apache.commons.lang.time.DateUtils.UTC_TIME_ZONE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.assertThat;
@@ -77,34 +72,28 @@ public class GroupMemberTest {
 
     @Test
     public void getUsername() {
-        assertThat("username", is(normalMember.getUsername()));
+        assertThat(normalMember.getUsername(), is("username"));
     }
 
     @Test
     public void getEmail() {
-        assertThat("user@example.com", is(normalMember.getEmail()));
+        assertThat(normalMember.getEmail(), is("user@example.com"));
     }
 
     @Test
     public void getName() {
-        assertThat("User Name", is(normalMember.getName()));
+        assertThat(normalMember.getName(), is("User Name"));
     }
 
     @Test
     public void getAccessLevel() {
-        assertThat(GitLabAccessLevel.DEVELOPER, is(normalMember.getAccessLevel()));
-        assertThat(GitLabAccessLevel.OWNER, is(adminMember.getAccessLevel()));
+        assertThat(normalMember.getAccessLevel(), is(GitLabAccessLevel.DEVELOPER));
+        assertThat(adminMember.getAccessLevel(), is(GitLabAccessLevel.OWNER));
     }
 
     @Test
     public void getCreatedAtDate() {
-        // create the date 2010-11-12 13:14:15
-        Calendar calendar = new GregorianCalendar(UTC_TIME_ZONE);
-        calendar.set(2010, NOVEMBER, 12, 13, 14, 15);
-        calendar.clear(MILLISECOND);
-        Date expectedDate = calendar.getTime();
-
-        assertThat(expectedDate, is(normalMember.getCreatedAtDate()));
+        assertThat(normalMember.getCreatedAtDate(), is(utcDate(2010, NOVEMBER, 12, 13, 14, 15)));
     }
 
     @Test
@@ -115,7 +104,7 @@ public class GroupMemberTest {
 
     @Test
     public void getGroupId() {
-        assertThat(1, is(normalMember.getGroupId()));
+        assertThat(normalMember.getGroupId(), is(1));
     }
 
     /**

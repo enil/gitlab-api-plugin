@@ -25,7 +25,6 @@
 
 package com.sonymobile.gitlab.api;
 
-import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
 import com.sonymobile.gitlab.exceptions.UserNotFoundException;
 import com.sonymobile.gitlab.model.GitLabSessionInfo;
 import com.sonymobile.gitlab.model.GitLabUserInfo;
@@ -103,7 +102,7 @@ public class UserImpersonationTest extends AbstractClientTest {
                         .withBodyFile("api/v3/user.json")));
 
         GitLabUserInfo user = newClient.getCurrentUser();
-        assertThat(1, is(user.getId()));
+        assertThat(user.getId(), is(1));
     }
 
     /**

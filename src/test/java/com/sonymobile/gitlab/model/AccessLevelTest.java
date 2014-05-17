@@ -43,28 +43,33 @@ public class AccessLevelTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
+    public void getNoneAccessLevel() {
+        assertThat(GitLabAccessLevel.accessLevelForId(0), is(GitLabAccessLevel.NONE));
+    }
+
+    @Test
     public void getGuestAccessLevel() {
-        assertThat(GitLabAccessLevel.GUEST, is(GitLabAccessLevel.accessLevelForId(10)));
+        assertThat(GitLabAccessLevel.accessLevelForId(10), is(GitLabAccessLevel.GUEST));
     }
 
     @Test
     public void getReporterAccessLevel() {
-        assertThat(GitLabAccessLevel.REPORTER, is(GitLabAccessLevel.accessLevelForId(20)));
+        assertThat(GitLabAccessLevel.accessLevelForId(20), is(GitLabAccessLevel.REPORTER));
     }
 
     @Test
     public void getDeveloperAccessLevel() {
-        assertThat(GitLabAccessLevel.DEVELOPER, is(GitLabAccessLevel.accessLevelForId(30)));
+        assertThat(GitLabAccessLevel.accessLevelForId(30), is(GitLabAccessLevel.DEVELOPER));
     }
 
     @Test
     public void getMasterAccessLevel() {
-        assertThat(GitLabAccessLevel.MASTER, is(GitLabAccessLevel.accessLevelForId(40)));
+        assertThat(GitLabAccessLevel.accessLevelForId(40), is(GitLabAccessLevel.MASTER));
     }
 
     @Test
     public void getOwnerAccessLevel() {
-        assertThat(GitLabAccessLevel.OWNER, is(GitLabAccessLevel.accessLevelForId(50)));
+        assertThat(GitLabAccessLevel.accessLevelForId(50), is(GitLabAccessLevel.OWNER));
     }
 
     @Test

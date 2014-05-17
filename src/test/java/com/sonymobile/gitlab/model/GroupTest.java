@@ -61,17 +61,17 @@ public class GroupTest {
 
     @Test
     public void getId() {
-        assertThat(1, is(group.getId()));
+        assertThat(group.getId(), is(1));
     }
 
     @Test
     public void getName() {
-        assertThat("Group Name", is(group.getName()));
+        assertThat(group.getName(), is("Group Name"));
     }
 
     @Test
     public void getPath() {
-        assertThat("groupname", is(group.getPath()));
+        assertThat(group.getPath(), is("groupname"));
     }
 
     /**
