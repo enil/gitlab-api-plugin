@@ -31,14 +31,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
+import static com.sonymobile.gitlab.helpers.DateHelpers.utcDate;
 import static com.sonymobile.gitlab.helpers.JsonFileLoader.jsonFile;
-import static java.util.Calendar.MILLISECOND;
 import static java.util.Calendar.NOVEMBER;
-import static org.apache.commons.lang.time.DateUtils.UTC_TIME_ZONE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.assertThat;
@@ -84,33 +79,27 @@ public class FullUserTest {
 
     @Test
     public void getId() {
-        assertThat(1, is(normalUser.getId()));
+        assertThat(normalUser.getId(), is(1));
     }
 
     @Test
     public void getUsername() {
-        assertThat("username", is(normalUser.getUsername()));
+        assertThat(normalUser.getUsername(), is("username"));
     }
 
     @Test
     public void getEmail() {
-        assertThat("user@example.com", is(normalUser.getEmail()));
+        assertThat(normalUser.getEmail(), is("user@example.com"));
     }
 
     @Test
     public void getName() {
-        assertThat("User Name", is(normalUser.getName()));
+        assertThat(normalUser.getName(), is("User Name"));
     }
 
     @Test
     public void getCreatedAtDate() {
-        // create the date 2010-11-12 13:14:15
-        Calendar calendar = new GregorianCalendar(UTC_TIME_ZONE);
-        calendar.set(2010, NOVEMBER, 12, 13, 14, 15);
-        calendar.clear(MILLISECOND);
-        Date expectedDate = calendar.getTime();
-
-        assertThat(expectedDate, is(normalUser.getCreatedAtDate()));
+        assertThat(normalUser.getCreatedAtDate(), is(utcDate(2010, NOVEMBER, 12, 13, 14, 15)));
     }
 
     @Test

@@ -29,14 +29,9 @@ import com.sonymobile.gitlab.helpers.JsonFileLoader;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
+import static com.sonymobile.gitlab.helpers.DateHelpers.utcDate;
 import static com.sonymobile.gitlab.helpers.JsonFileLoader.jsonFile;
-import static java.util.Calendar.MILLISECOND;
 import static java.util.Calendar.NOVEMBER;
-import static org.apache.commons.lang.time.DateUtils.UTC_TIME_ZONE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasToString;
 import static org.junit.Assert.assertThat;
@@ -71,33 +66,27 @@ public class SessionTest {
 
     @Test
     public void getId() {
-        assertThat(1, is(normalSession.getId()));
+        assertThat(normalSession.getId(), is(1));
     }
 
     @Test
     public void getUsername() {
-        assertThat("username", is(normalSession.getUsername()));
+        assertThat(normalSession.getUsername(), is("username"));
     }
 
     @Test
     public void getEmail() {
-        assertThat("user@example.com", is(normalSession.getEmail()));
+        assertThat(normalSession.getEmail(), is("user@example.com"));
     }
 
     @Test
     public void getName() {
-        assertThat("User Name", is(normalSession.getName()));
+        assertThat(normalSession.getName(), is("User Name"));
     }
 
     @Test
     public void getCreatedAtDate() {
-        // create the date 2010-11-12 13:14:15
-        Calendar calendar = new GregorianCalendar(UTC_TIME_ZONE);
-        calendar.set(2010, NOVEMBER, 12, 13, 14, 15);
-        calendar.clear(MILLISECOND);
-        Date expectedDate = calendar.getTime();
-
-        assertThat(expectedDate, is(normalSession.getCreatedAtDate()));
+        assertThat(normalSession.getCreatedAtDate(), is(utcDate(2010, NOVEMBER, 12, 13, 14, 15)));
     }
 
     @Test
@@ -114,7 +103,7 @@ public class SessionTest {
 
     @Test
     public void getPrivateToken() {
-        assertThat("0123456789abcdef", is(normalSession.getPrivateToken()));
+        assertThat(normalSession.getPrivateToken(), is("0123456789abcdef"));
     }
 
     /**

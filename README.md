@@ -56,12 +56,14 @@ Use the static method `openSession(host, login, password)` to connect with user'
 
     GitLabApiClient client = GitLabApiClient.openSession("http://demo.gitlab.com", "jsmith", "123456");
 
-It is possible to temporarily assume the identity of another user with the method `impersonate(privateToken)` using the
-private token of that user:
+It is possible to temporarily assume the identity of another user with the method `asUser(userId)` using the
+user ID of that user:
 
-    // prints the name of the user with the provided private token
-    System.out.println(client.impersonate("Wvjy2Krpb7y8xi93owUz").getCurrentUser().getName());
+    // prints the name of the user with the provided user ID
+    System.out.println(client.asUser(2).getCurrentUser().getName());
     // prints "John Smith"
+
+Note that the client must be authenticated with the private token of an administrator user for this to work.
 
 ### Session
 

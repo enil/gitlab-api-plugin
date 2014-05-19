@@ -64,9 +64,9 @@ public class ClientGroupTest extends AbstractClientTest {
         assertThat(groups, hasSize(1));
 
         GitLabGroupInfo group = groups.get(0);
-        assertThat(1, is(group.getId()));
-        assertThat("Group Name", is(group.getName()));
-        assertThat("groupname", is(group.getPath()));
+        assertThat(group.getId(), is(1));
+        assertThat(group.getName(), is("Group Name"));
+        assertThat(group.getPath(), is("groupname"));
     }
 
     /**
@@ -99,9 +99,9 @@ public class ClientGroupTest extends AbstractClientTest {
                         .withBodyFile("/api/v3/groups/1.json")));
 
         GitLabGroupInfo group = client.getGroup(1);
-        assertThat(1, is(group.getId()));
-        assertThat("Group Name", is(group.getName()));
-        assertThat("groupname", is(group.getPath()));
+        assertThat(group.getId(), is(1));
+        assertThat(group.getName(), is("Group Name"));
+        assertThat(group.getPath(), is("groupname"));
     }
 
     /**
@@ -158,16 +158,16 @@ public class ClientGroupTest extends AbstractClientTest {
         GitLabGroupMemberInfo blockedMember = members.get(1);
         GitLabGroupMemberInfo adminMember = members.get(2);
 
-        assertThat(1, is(normalMember.getGroupId()));
-        assertThat(GitLabAccessLevel.DEVELOPER, is(normalMember.getAccessLevel()));
-        assertThat(1, is(normalMember.getId()));
+        assertThat(normalMember.getGroupId(), is(1));
+        assertThat(normalMember.getAccessLevel(), is(GitLabAccessLevel.DEVELOPER));
+        assertThat(normalMember.getId(), is(1));
         assertThat(normalMember.isBlocked(), is(false));
 
         assertThat(blockedMember.isBlocked(), is(true));
 
-        assertThat(1, is(adminMember.getGroupId()));
-        assertThat(GitLabAccessLevel.OWNER, is(adminMember.getAccessLevel()));
-        assertThat(3, is(adminMember.getId()));
+        assertThat(adminMember.getGroupId(), is(1));
+        assertThat(adminMember.getAccessLevel(), is(GitLabAccessLevel.OWNER));
+        assertThat(adminMember.getId(), is(3));
         assertThat(adminMember.isBlocked(), is(false));
     }
 
