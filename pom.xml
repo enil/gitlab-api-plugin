@@ -16,5 +16,6 @@
 
 	<modules>
 		<module>gitlab-api-client</module>
+    <module>gitlab-api-plugin</module>
 	</modules>
 </project>
