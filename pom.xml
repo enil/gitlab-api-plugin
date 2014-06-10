@@ -6,13 +6,45 @@
   <artifactId>gitlab-api-plugin-parent</artifactId>
   <version>0.3</version>
   <packaging>pom</packaging>
+  <name>GitLab API</name>
+  <url>http://wiki.jenkins-ci.org/display/JENKINS/GitLab+API</url>
 
   <licenses>
     <license>
       <name>MIT</name>
-      <comments>Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB. All rights reserved.</comments>
+      <comments>
+        Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB. All rights reserved.
+      </comments>
     </license>
   </licenses>
+
+  <developers>
+    <developer>
+      <id>eonilsson</id>
+      <name>Emil Nilsson</name>
+      <email>emil.nilsson@sonymobile.com</email>
+      <organization>Sony Mobile Communications</organization>
+    </developer>
+    <developer>
+      <id>aalanko</id>
+      <name>Andreas Alanko</name>
+      <email>andreas.alanko@sonymobile.com</email>
+      <organization>Sony Mobile Communications</organization>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:ssh://github.com/jenkinsci/gitlab-api-plugin-parent.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/gitlab-api-plugin-parent.git</developerConnection>
+    <url>https://github.com/jenkinsci/gitlab-api-plugin-parent</url>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>maven.jenkins-ci.org</id>
+      <url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
+    </repository>
+  </distributionManagement>
 
   <modules>
     <module>gitlab-api-client</module>

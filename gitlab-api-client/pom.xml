@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.sonymobile.gitlab</groupId>
@@ -10,22 +10,39 @@
   <licenses>
     <license>
       <name>MIT</name>
-      <comments>Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB. All rights reserved.</comments>
+      <comments>
+        Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB. All rights reserved.
+      </comments>
     </license>
   </licenses>
 
   <developers>
     <developer>
+      <id>eonilsson</id>
       <name>Emil Nilsson</name>
       <email>emil.nilsson@sonymobile.com</email>
       <organization>Sony Mobile Communications</organization>
     </developer>
     <developer>
+      <id>aalanko</id>
       <name>Andreas Alanko</name>
       <email>andreas.alanko@sonymobile.com</email>
       <organization>Sony Mobile Communications</organization>
     </developer>
   </developers>
+
+  <scm>
+    <connection>scm:git:ssh://github.com/jenkinsci/gitlab-api-plugin-parent.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/gitlab-api-plugin-parent.git</developerConnection>
+    <url>http://github.com/jenkinsci/gitlab-api-plugin-parent</url>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>maven.jenkins-ci.org</id>
+      <url>https://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
+    </repository>
+  </distributionManagement>
 
   <properties>
     <maven.compiler.source>1.6</maven.compiler.source>
@@ -97,7 +114,6 @@
         <configuration>
           <configLocation>build_config/swe_checkstyle.xml</configLocation>
           <suppressionsLocation>build_config/checkstyle-supressions.xml</suppressionsLocation>
-          <!-- fixme: make tests pass checkstyle -->
           <includeTestSourceDirectory>false</includeTestSourceDirectory>
         </configuration>
       </plugin>
