@@ -4,13 +4,13 @@
 
   <groupId>com.sonymobile.gitlab</groupId>
   <artifactId>gitlab-api-client</artifactId>
-  <version>${parent.version}</version>
+  <version>0.3-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <licenses>
     <license>
       <name>MIT</name>
-      <comments>Copyright (c) 2014 Sony Mobile Communications AB. All rights reserved.</comments>
+      <comments>Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB. All rights reserved.</comments>
     </license>
   </licenses>
 
