@@ -13,6 +13,7 @@
   <packaging>hpi</packaging>
   <name>GitLab API</name>
   <url>http://wiki.jenkins-ci.org/display/JENKINS/GitLab+API</url>
+  <description>This plugin provides GitLab API access for other plugins.</description>
 
   <licenses>
     <license>

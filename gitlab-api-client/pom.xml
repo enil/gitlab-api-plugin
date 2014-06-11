@@ -6,6 +6,8 @@
   <artifactId>gitlab-api-client</artifactId>
   <version>0.3</version>
   <packaging>jar</packaging>
+  <name>GitLab API Client</name>
+  <description>API Client library for the GitLab REST API.</description>
 
   <licenses>
     <license>
