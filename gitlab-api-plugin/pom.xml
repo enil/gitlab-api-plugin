@@ -7,7 +7,7 @@
     <version>1.554.1</version>
   </parent>
 
-  <groupId>com.sonymobile.jenkins.plugins</groupId>
+  <groupId>com.sonymobile.jenkins.plugins.gitlab</groupId>
   <artifactId>gitlab-api</artifactId>
   <version>0.3</version>
   <packaging>hpi</packaging>
@@ -40,9 +40,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:ssh://github.com/jenkinsci/gitlab-api-plugin-parent.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/gitlab-api-plugin-parent.git</developerConnection>
-    <url>https://github.com/jenkinsci/gitlab-api-plugin-parent</url>
+    <connection>scm:git:ssh://github.com/jenkinsci/gitlab-api-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/gitlab-api-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/gitlab-api-plugin</url>
   </scm>
 
   <distributionManagement>

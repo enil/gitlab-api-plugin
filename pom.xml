@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.sonymobile.gitlab</groupId>
+  <groupId>com.sonymobile.jenkins.plugins.gitlab</groupId>
   <artifactId>gitlab-api-plugin-parent</artifactId>
   <version>0.3</version>
   <packaging>pom</packaging>
@@ -35,9 +35,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:ssh://github.com/jenkinsci/gitlab-api-plugin-parent.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/gitlab-api-plugin-parent.git</developerConnection>
-    <url>https://github.com/jenkinsci/gitlab-api-plugin-parent</url>
+    <connection>scm:git:ssh://github.com/jenkinsci/gitlab-api-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/gitlab-api-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/gitlab-api-plugin</url>
   </scm>
 
   <distributionManagement>

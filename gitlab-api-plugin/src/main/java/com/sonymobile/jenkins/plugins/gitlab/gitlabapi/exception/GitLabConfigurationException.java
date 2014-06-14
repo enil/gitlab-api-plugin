@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  */
 
-package com.sonymobile.jenkins.plugins.gitlabapi.exception;
+package com.sonymobile.jenkins.plugins.gitlab.gitlabapi.exception;
 
 import com.sonymobile.gitlab.exceptions.GitLabApiException;
 
