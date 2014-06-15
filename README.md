@@ -1,10 +1,14 @@
-# gitlab-api-plugin
+# gitlab-api-plugin-parent
 
-A Jenkins plugin for configuring and using a [GitLab][] REST API.
+Parent for the following modules:
 
-# Usage
+[gitlab-api-client](gitlab-api-client/README.md)
+:   An API Client library for the GitLab REST API.
 
-Configure the GitLab server URL and private token in the section *GitLab API Configuration* under *Configure System*.
+[gitlab-api-plugin](gitlab-api-plugin/README.md)
+:   A Jenkins plugin which provides GitLab API access for other plugins.
+
+See `README.md` under each module for more information.
 
 ## License
 
@@ -30,6 +34,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
-
-[GitLab]:       https://www.gitlab.com/

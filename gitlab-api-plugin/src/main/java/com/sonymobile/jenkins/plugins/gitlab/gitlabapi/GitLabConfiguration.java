@@ -23,14 +23,13 @@
  * THE SOFTWARE.
  */
 
-package com.sonymobile.jenkins.plugins.gitlabapi;
+package com.sonymobile.jenkins.plugins.gitlab.gitlabapi;
 
 import com.sonymobile.gitlab.api.GitLabApiClient;
 import com.sonymobile.gitlab.exceptions.AuthenticationFailedException;
 import com.sonymobile.gitlab.exceptions.GitLabApiException;
-import com.sonymobile.jenkins.plugins.gitlabapi.exception.GitLabConfigurationException;
+import com.sonymobile.jenkins.plugins.gitlab.gitlabapi.exception.GitLabConfigurationException;
 import hudson.Extension;
-import hudson.ExtensionList;
 import hudson.ProxyConfiguration;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
@@ -323,9 +322,6 @@ public class GitLabConfiguration extends GlobalConfiguration {
      * @return the instance or null if Jenkins misbehaves
      */
     public static GitLabConfiguration getInstance() {
-        ExtensionList<GitLabConfiguration> list = Jenkins.getInstance().getExtensionList(GitLabConfiguration.class);
-
-        // return the singleton instance if available from the extension list
-        return (list != null && !list.isEmpty()) ? list.get(0) : null;
+        return GlobalConfiguration.all().get(GitLabConfiguration.class);
     }
 }
