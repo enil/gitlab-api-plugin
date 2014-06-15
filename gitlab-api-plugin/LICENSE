@@ -1,20 +1,6 @@
-# gitlab-api-plugin-parent
-
-Parent for the following modules:
-
-[gitlab-api-client](gitlab-api-client/README.md)
-:   An API Client library for the GitLab REST API.
-
-[gitlab-api-plugin](gitlab-api-plugin/README.md)
-:   A Jenkins plugin which provides GitLab API access for other plugins.
-
-See `README.md` under each module for more information.
-
-## License
-
 The MIT License (MIT)
 
-Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB.
+Copyright (c) 2014 Andreas Alanko, Emil Nilsson, Sony Mobile Communications AB. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
